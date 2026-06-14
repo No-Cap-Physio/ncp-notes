@@ -1,0 +1,1096 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gregory Seminar — NoCap Synthesis</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#0F1B2D;--np:#162542;--np2:#1E2F4D;--nl:#2A3F5F;--nk:#F5F1E8;--nd:#A8B4C4;--nm:#6C7A8F;--tan:#D4A574;--td:rgba(212,165,116,0.12);--tb:rgba(212,165,116,0.28);--bad:#EF476F;--bdd:rgba(239,71,111,0.10);--warn:#FFB703;--wd:rgba(255,183,3,0.10);--wt:#C58A00;--good:#06D6A0;--gd:rgba(6,214,160,0.10);--f:'Inter',system-ui,sans-serif}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--navy);color:var(--nk);font-family:var(--f);font-size:14px;line-height:1.8;min-height:100vh}
+::-webkit-scrollbar{width:5px;height:5px}::-webkit-scrollbar-track{background:var(--navy)}::-webkit-scrollbar-thumb{background:var(--nl);border-radius:3px}
+.header{background:var(--np);border-bottom:1px solid var(--nl);padding:16px 28px 12px;position:sticky;top:0;z-index:200}
+.hbrand{font-size:10px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--tan)}
+.htitle{font-size:13px;font-weight:600;color:var(--nk)}
+.hsub{font-size:12px;color:var(--nm);margin-top:2px}
+.pills{display:flex;gap:7px;margin-top:8px;flex-wrap:wrap}
+.pill{font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:2px 8px;border-radius:3px;border:1px solid var(--nl);color:var(--nm)}
+.pill.tan{color:var(--tan);border-color:var(--tb);background:var(--td)}
+.tabs{display:flex;background:var(--np);border-bottom:1px solid var(--nl);padding:0 28px;overflow-x:auto;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tbtn{font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--nm);background:none;border:none;border-bottom:2px solid transparent;padding:9px 13px;cursor:pointer;white-space:nowrap;transition:color .15s,border-color .15s}
+.tbtn:hover{color:var(--nd)}.tbtn.active{color:var(--tan);border-bottom-color:var(--tan)}
+.sbar{padding:8px 28px;background:var(--navy);border-bottom:1px solid var(--nl);display:flex;align-items:center;gap:10px}
+.slabel{font-size:10px;font-weight:700;letter-spacing:.10em;text-transform:uppercase;color:var(--nm);white-space:nowrap}
+.sinput{width:100%;max-width:480px;background:var(--np);border:1px solid var(--nl);border-radius:4px;padding:6px 12px;font-family:var(--f);font-size:12px;color:var(--nk);outline:none;transition:border-color .15s}
+.sinput::placeholder{color:var(--nm)}.sinput:focus{border-color:var(--tan)}
+.scount{font-size:11px;color:var(--nm);white-space:nowrap;min-width:80px}
+.main{display:flex;min-height:calc(100vh - 136px)}
+.sidebar{width:196px;flex-shrink:0;background:var(--np);border-right:1px solid var(--nl);padding:18px 0;position:sticky;top:136px;height:calc(100vh - 136px);overflow-y:auto}
+.slab2{font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--nm);padding:8px 14px 4px}
+.slink{display:block;font-size:12px;color:var(--nd);padding:4px 14px;cursor:pointer;border-left:2px solid transparent;text-decoration:none;transition:all .12s;line-height:1.5}
+.slink:hover{color:var(--nk);border-left-color:var(--nl)}.slink.active{color:var(--tan);border-left-color:var(--tan);background:var(--td)}
+.content{flex:1;padding:28px 32px;max-width:960px}
+.tab-panel{display:none}.tab-panel.active{display:block;animation:fi .18s ease}
+@keyframes fi{from{opacity:.7;transform:translateY(3px)}to{opacity:1;transform:none}}
+.section{margin-bottom:40px;scroll-margin-top:150px}
+.sh{display:flex;align-items:center;gap:9px;margin-bottom:14px;padding-bottom:9px;border-bottom:1px solid var(--nl)}
+.si{font-size:15px;flex-shrink:0}.st{font-size:11px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--tan)}
+.card{background:var(--np);border:1px solid var(--nl);border-radius:5px;padding:14px 16px;margin-bottom:9px}
+.card.hi{border-color:var(--tb);background:var(--td)}.card.warn{border-color:rgba(255,183,3,.3);background:var(--wd)}
+.card.flag{border-color:rgba(239,71,111,.25);background:var(--bdd)}.card.good{border-color:rgba(6,214,160,.25);background:var(--gd)}
+.ct{font-size:13px;font-weight:700;color:var(--nk);margin-bottom:8px;letter-spacing:-.01em}
+.cb{color:var(--nd);font-size:13px;line-height:1.8}.cb strong{color:var(--nk);font-weight:600}.cb em{color:var(--tan);font-style:italic}
+.bl{list-style:none;padding:0;margin:0}
+.bl li{position:relative;padding-left:18px;margin-bottom:6px;font-size:13px;color:var(--nd);line-height:1.75}
+.bl li::before{content:"›";position:absolute;left:0;color:var(--tan);font-weight:700;font-size:14px;line-height:1.6}
+.bl li strong{color:var(--nk);font-weight:600}.bl li em{color:var(--tan);font-style:italic}
+.num{font-weight:700;color:var(--tan);text-shadow:0 0 12px rgba(212,165,116,.35)}
+.proto{background:var(--np2);border:1px solid var(--nl);border-left:3px solid var(--tan);border-radius:4px;padding:13px 15px;margin-bottom:9px}
+.proto.wp{border-left-color:var(--warn)}.proto.bp{border-left-color:var(--bad)}
+.pn{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--tan);margin-bottom:9px}
+.proto.wp .pn{color:var(--wt)}.proto.bp .pn{color:var(--bad)}
+.dtable{width:100%;border-collapse:collapse;font-size:12.5px;margin-bottom:12px}
+.dtable th{font-size:10px;font-weight:700;letter-spacing:.10em;text-transform:uppercase;color:var(--nm);padding:8px 13px;border-bottom:1px solid var(--nl);text-align:left;background:var(--np2)}
+.dtable td{padding:8px 13px;border-bottom:1px solid var(--nl);color:var(--nd);vertical-align:top;line-height:1.65}
+.dtable tr:last-child td{border-bottom:none}.dtable tr:hover td{background:rgba(212,165,116,.04)}
+.dtable td:nth-child(2){font-weight:700;color:var(--tan);white-space:nowrap;text-shadow:0 0 12px rgba(212,165,116,.35)}
+.cue{border-left:3px solid var(--tan);padding:9px 15px;margin-bottom:7px;font-size:13.5px;color:var(--nk);font-style:italic;background:var(--td);border-radius:0 4px 4px 0;line-height:1.7}
+.agrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+@media(max-width:680px){.agrid{grid-template-columns:1fr}}
+.acard{background:var(--np);border:1px solid var(--nl);border-radius:5px;padding:13px 15px}
+.alab{font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--tan);margin-bottom:9px;display:block}
+.pri{border-left:3px solid var(--nl);padding:9px 13px;margin-bottom:7px;background:var(--np);border-radius:0 4px 4px 0;font-size:13px}
+.pri.high{border-left-color:var(--bad)}.pri.mod{border-left-color:var(--warn)}.pri.low{border-left-color:var(--good)}
+.plab{font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;margin-bottom:3px}
+.pri.high .plab{color:var(--bad)}.pri.mod .plab{color:var(--wt)}.pri.low .plab{color:var(--good)}
+.pb{color:var(--nd);line-height:1.75}
+.nblock{background:var(--np);border:1px solid var(--nl);border-radius:6px;padding:18px;margin-top:10px}
+.nrow{display:flex;gap:14px;padding:8px 0;border-bottom:1px solid var(--nl);font-size:12.5px}
+.nrow:last-child{border-bottom:none}
+.nkey{font-size:10px;font-weight:700;color:var(--nm);letter-spacing:.08em;text-transform:uppercase;width:130px;flex-shrink:0;padding-top:2px}
+.nval{color:var(--nd);flex:1;line-height:1.7}
+.taglist{display:flex;flex-wrap:wrap;gap:5px}
+.tag{font-size:10px;font-weight:600;letter-spacing:.06em;color:var(--tan);background:var(--td);border:1px solid var(--tb);border-radius:3px;padding:2px 7px}
+mark{background:rgba(212,165,116,.3);color:var(--nk);border-radius:2px;padding:0 2px}
+.hbs{opacity:.12;transition:opacity .1s}
+.pnotes{margin-top:12px}
+.pnlab{font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--nm);margin-bottom:5px;display:block}
+.pnotes textarea{width:100%;background:var(--np2);border:1px solid var(--nl);border-radius:4px;padding:9px 12px;font-family:var(--f);font-size:12.5px;color:var(--nk);line-height:1.7;resize:vertical;min-height:70px;outline:none;transition:border-color .15s}
+.pnotes textarea:focus{border-color:var(--tan)}.pnotes textarea::placeholder{color:var(--nm)}
+.psaved{font-size:11px;color:var(--good);margin-top:4px;opacity:0;transition:opacity .3s}
+.fn-s{margin-bottom:34px;border-left:2px solid var(--nl);padding-left:16px;transition:border-color .2s}
+.fn-s:hover{border-left-color:var(--tan)}
+.fn-day{font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--tan);margin-bottom:3px}
+.fn-head{font-size:14px;font-weight:700;color:var(--nk);margin-bottom:9px}
+.fn-i{padding:5px 0;font-size:13px;color:var(--nd);line-height:1.75;border-bottom:1px solid rgba(42,63,95,.45)}
+.fn-i:last-child{border-bottom:none}.fn-i strong{color:var(--nk);font-weight:600}
+.fn-no{color:var(--nm);font-size:13px;padding:20px 0;display:none}
+code{font-size:11px;background:var(--np2);border:1px solid var(--nl);padding:1px 5px;border-radius:3px;color:var(--tan)}
+@media(max-width:720px){.sidebar{display:none}.content{padding:18px 16px}.header,.sbar,.tabs{padding-left:16px;padding-right:16px}}
+</style></head>
+<body>
+<div class="header">
+  <div style="display:flex;align-items:baseline;gap:12px;flex-wrap:wrap">
+    <span class="hbrand">NoCap Synthesis</span>
+    <span class="htitle">Manual Performance Therapy — St&#233;phane Gregory</span>
+  </div>
+  <div class="hsub">Hip, Foot, Ankle &amp; Shoulder Mobilisation &middot; Days 1 &amp; 2</div>
+  <div class="pills">
+    <span class="pill">Seminar &middot; 2 Days</span>
+    <span class="pill tan">Clinical</span>
+    <span class="pill tan">Performance</span>
+    <span class="pill">Biomechanics</span>
+    <span class="pill">Jun 14 2026</span>
+  </div>
+</div>
+<div class="tabs">
+  <button class="tbtn active"  onclick="sw('overview',this)">Overview</button>
+  <button class="tbtn" onclick="sw('system',this)">Day 1 &mdash; System</button>
+  <button class="tbtn" onclick="sw('foot',this)">Day 1 &mdash; Foot &amp; Ankle</button>
+  <button class="tbtn" onclick="sw('hip',this)">Day 1 &mdash; Hip</button>
+  <button class="tbtn" onclick="sw('shoulder',this)">Day 2 &mdash; Shoulder</button>
+  <button class="tbtn" onclick="sw('other',this)">Day 2 &mdash; Wrist / Hamstring / Fascia</button>
+  <button class="tbtn" onclick="sw('data',this)">All Data</button>
+  <button class="tbtn" onclick="sw('fullnotes',this)">&#128269; Full Notes</button>
+  <button class="tbtn" onclick="sw('actions',this)">Action Items</button>
+  <button class="tbtn" onclick="sw('notion',this)">Notion Push</button>
+</div>
+<div class="sbar">
+  <span class="slabel">Search</span>
+  <input class="sinput" type="text" id="SI" placeholder="Search all notes &mdash; type any keyword&hellip;" oninput="doSearch()"/>
+  <span class="scount" id="SC"></span>
+</div>
+<div class="main">
+<nav class="sidebar" id="sidebar">
+  <div class="slab2">Navigate</div>
+  <a class="slink active" onclick="nav('thesis',this)">Core Thesis</a>
+  <a class="slink" onclick="nav('keycon',this)">Key Concepts</a>
+  <a class="slink" onclick="nav('nuance',this)">Nuances &amp; Red Flags</a>
+  <a class="slink" onclick="nav('cues',this)">Coaching Cues</a>
+</nav>
+<div class="content" id="MC">
+<!-- ===OVERVIEW=== -->
+<div class="tab-panel active" id="tab-overview">
+<div class="section" id="thesis">
+<div class="sh"><span class="si">🧠</span><span class="st">Core Thesis</span></div>
+<div class="card hi"><div class="ct">The Goal Is Winning, Not Return to Sport</div><ul class="bl">
+<li>Every table treatment must directly improve the athlete's ability to handle sport demands</li>
+<li>Clinical question: not "what is wrong?" — "what limits this athlete's ability to perform?"</li>
+<li>Return to sport is the floor, not the ceiling</li>
+</ul></div>
+<div class="card hi"><div class="ct">Shrink the Feedback Loop</div><ul class="bl">
+<li>Treatment without immediate movement feedback is guesswork</li>
+<li>Pick-Through method: treat → retest movement → treat → retest — each pass gives you data</li>
+<li>Trackside/courtside treatment removes the telephone game between injury, clinic, and training floor</li>
+</ul></div>
+<div class="card hi"><div class="ct">You Cannot Out-Treat Bad Coaching</div><ul class="bl">
+<li>Treatment nudges athletes toward better mechanics — coaching reinforces it</li>
+<li>Without both, neither works long-term</li>
+<li>The hip is the central driver — treating it resolves a disproportionate share of knee, ankle, back, and shoulder complaints</li>
+</ul></div>
+<div class="card hi"><div class="ct">Pliability Is the Key Functional Test</div><ul class="bl">
+<li>Compress a muscle — if the athlete cannot actively move through it, they cannot handle loaded movement in sport</li>
+<li>This is the difference between passive range and functional tissue quality</li>
+<li>Pass = tissue available under load. Fail = treat before loading.</li>
+</ul></div>
+</div>
+
+<div class="section" id="keycon">
+<div class="sh"><span class="si">🔑</span><span class="st">Key Concepts</span></div>
+<div class="card"><div class="ct">1. Pick-Through / Performance Therapy</div><ul class="bl">
+<li>Quick table treatment applied at the training site, not the clinic</li>
+<li>Treat one area → retest movement → treat next area</li>
+<li>Treatment budget: <span class="num">90s–2.5 min</span> trackside — <span class="num">5 min</span> max before coaches object</li>
+<li><span class="num">5 min</span> clinic still leaves <span class="num">25 min</span> for relationship, load management, history</li>
+<li>One Treatment Task: one pass, one area, retest — this is the core skill to develop</li>
+</ul></div>
+<div class="card"><div class="ct">2. Aberrant vs. Protective Tension</div><ul class="bl">
+<li><strong>Aberrant tension:</strong> within the range of motion, restricts movement before end range — treat this</li>
+<li><strong>Protective tension:</strong> last <span class="num">~20%</span> of range — normal, leave it alone</li>
+<li><strong>No tension / looseness:</strong> also a problem — instability, don't mobilise more</li>
+<li>Weak muscles feel tight when first loaded — that's DOMS, not dysfunction</li>
+<li>Training fixes DOMS; treating it blocks adaptation</li>
+</ul></div>
+<div class="card"><div class="ct">3. Pain Is Not the Target</div><ul class="bl">
+<li>Never ask athletes what hurts — never use the word "pain" in session</li>
+<li>Movement is the measure — use tension quality and whether movement changes after treatment</li>
+<li><em>"If shit moves better, you did a good job."</em></li>
+<li>General population still needs pain addressed — but always use movement change as the primary guide</li>
+</ul></div>
+<div class="card"><div class="ct">4. Stiffness as a Performance Quality</div><ul class="bl">
+<li>Stiffness = contact the ground → load through the kinetic chain → drive from the hip → pop off</li>
+<li>Calf/ankle-dominant push-off = stiffness deficit = Achilles problems, posterior knee pain, bunions, claw toes</li>
+<li>Ground reaction force in sprinting: <span class="num">8–12× BW</span></li>
+<li>Heel still touches the ground at top speed — Achilles only handles this if the whole chain shares load</li>
+<li>Glute hop test: if glutes aren't engaging at each hop, athlete is calf-dominant, not hip-driven</li>
+</ul></div>
+<div class="card"><div class="ct">5. Layer-Based Treatment</div><ul class="bl">
+<li>Surface tissues must be released before you can access deeper structures</li>
+<li>Shortening a muscle gives access to deeper layers underneath</li>
+<li>Knee bent = gastroc goes slack, soleus exposed</li>
+<li>Toes curled = FHL exposed — three tissues, one hand position, <span class="num">~1 minute</span></li>
+</ul></div>
+<div class="card"><div class="ct">6. Long Lever Muscles Dominate the Shoulder</div><ul class="bl">
+<li>Muscles farthest from the shoulder joint have the most leverage over it</li>
+<li>Small tightness in the lat creates large tension at the shoulder</li>
+<li>Priority order: <strong>Lat (king)</strong> → Pec major/minor → Tricep long head → Teres major</li>
+<li>Deltoid tightness <em>"rarely, rarely matters"</em> — don't start there</li>
+</ul></div>
+<div class="card"><div class="ct">7. Hip Power Drives Shoulder Performance</div><ul class="bl">
+<li>In throwing, lifting, golf, basketball — hip rotation restriction → shoulder compensates for velocity deficit</li>
+<li>MLB research: each joint distal-to-proximal adds to terminal velocity</li>
+<li>Hip deficit (<span class="num">−200 m/s</span>) → shoulder takes the load</li>
+<li><em>"80% of rotator cuff issues in weightlifting are a hip problem"</em></li>
+</ul></div>
+<div class="card"><div class="ct">8. Stimulus-Based Rehab</div><ul class="bl">
+<li>The final rep closest to failure is the stimulus — not the total volume before it</li>
+<li>One true failure = one training session worth of adaptation stimulus</li>
+<li>Table-side: compress target muscle → athlete contracts against your thumb → fail → done</li>
+<li>One stimulus every <span class="num">10–14 days</span> is sufficient if the failure was real</li>
+<li>For trained athletes: the sport IS the rehab — don't add extra volume</li>
+</ul></div>
+</div>
+
+<div class="section" id="nuance">
+<div class="sh"><span class="si">⚠️</span><span class="st">Nuances, Caveats &amp; Red Flags</span></div>
+<div class="card warn"><div class="ct">Treating an Unstable Athlete Aggressively = Making Them Worse</div><ul class="bl">
+<li>Real case: daily treatment made a top-10-Asian 100m sprinter worse</li>
+<li><span class="num">3 months</span> off treatment + <span class="num">2–3 min</span> performance therapy <span class="num">2–3×/week</span> resolved everything</li>
+<li>Screen for stability BEFORE loading treatment</li>
+</ul></div>
+<div class="card warn"><div class="ct">Stability Masquerading as Mobility Restriction</div><ul class="bl">
+<li>Athlete tightens into rotation = motor control/stability deficit, NOT tissue restriction</li>
+<li>Do NOT mobilise aggressively in this case</li>
+<li>Strengthen in that range first, then re-assess</li>
+</ul></div>
+<div class="card warn"><div class="ct">Big Toe Hypermobility</div><ul class="bl">
+<li>Very loose big toe passive ROM = compensating for insufficient hip extension or ankle plantarflexion</li>
+<li>Don't treat the toe — treat the hip and ankle</li>
+</ul></div>
+<div class="card warn"><div class="ct">MRI Timing</div><ul class="bl">
+<li>No treatment to an area for <span class="num">~1 week</span> before MRI</li>
+<li>Acupuncture creates inflammation that shows as swelling on imaging — distorts the structural picture</li>
+<li>If athlete improves with washout period alone, you already have your answer</li>
+</ul></div>
+<div class="card warn"><div class="ct">Post-Treatment Soreness</div><ul class="bl">
+<li><span class="num">2–4 days</span> expected for aggressive treatment on long-restricted tissue</li>
+<li>Swelling/fullness is also normal — warn athletes in advance</li>
+<li>Subscap: max once every <span class="num">~2 weeks</span> — very bruisy, not a weekly treatment</li>
+</ul></div>
+<div class="card flag"><div class="ct">⚑ Speculative / Clinical Experience Only</div><ul class="bl">
+<li>Pliability test, layered tissue concept, hyperpolarisation language — all clinically plausible but not formally validated</li>
+<li><em>"From clinical experience. It's definitely not Cochrane."</em></li>
+<li>Treat as high-quality clinical intuition, not peer-reviewed evidence</li>
+</ul></div>
+</div>
+
+<div class="section" id="cues">
+<div class="sh"><span class="si">🎯</span><span class="st">Coaching Cues &amp; Practitioner Quotes</span></div>
+<div class="cue">"The goal is not to go back to sport. It's to win the sport."</div>
+<div class="cue">"The smaller you can make the feedback loop, the better your outcomes."</div>
+<div class="cue">"You can't out-treat bad coaching. Sadly, that's why I have a really good job in China."</div>
+<div class="cue">"I never ask what hurts. I want to see if shit is moving well."</div>
+<div class="cue">"A weak muscle doesn't need to be looser. It needs to get stronger."</div>
+<div class="cue">"If you put ice on something long enough, it goes numb — that's not treatment, that's anaesthesia."</div>
+<div class="cue">"Pick one thing. One pass. Then let them train. That is the skill."</div>
+<div class="cue">"If it's tight within the range, treat it. If it's tight at the end, leave it alone."</div>
+<div class="cue">"Put your hands on your glutes and hop — you should feel that kick every single time."</div>
+<div class="cue">"Only at the start push-off do you hit triple extension. After that, you're just stacked."</div>
+<div class="cue">"The adductor magnus is one of the most powerful hip extensors — and almost no one trains or treats it."</div>
+<div class="cue">"Fix the lat, fix most issues."</div>
+</div>
+<div class="pnotes"><span class="pnlab">📝 Your Notes — Overview</span>
+<textarea id="pn-overview" placeholder="Add your own observations, disagreements, or follow-up questions here…" oninput="saveNote('overview')"></textarea>
+<div class="psaved" id="sv-overview">Saved ✓</div></div>
+</div><!-- /overview -->
+
+<!-- ===DAY 1 SYSTEM=== -->
+<div class="tab-panel" id="tab-system">
+<div class="section">
+<div class="sh"><span class="si">⚙️</span><span class="st">Champion Builder Model — Four Pillars</span></div>
+<div class="pri high"><div class="plab">Pillar 1</div><div class="pb"><strong>Find the Limiter</strong> — what actually prevents performance, not what the diagnosis is</div></div>
+<div class="pri high"><div class="plab">Pillar 2</div><div class="pb"><strong>Create the Plan</strong> — broken → podium, not broken → return to sport</div></div>
+<div class="pri mod"><div class="plab">Pillar 3</div><div class="pb"><strong>Modify Training</strong> — keep training stimulus while managing the injury</div></div>
+<div class="pri mod"><div class="plab">Pillar 4</div><div class="pb"><strong>Use the Sport as Rehab</strong> — sport drills ARE the rehab mechanism</div></div>
+<div class="card" style="margin-top:12px"><div class="ct">Background Context</div><ul class="bl">
+<li>Built and applied at Team China (track/field, wrestling, weightlifting, trampoline) and three provinces</li>
+<li>Designed around coordinating multi-disciplinary teams — one practitioner can manage the whole system or effectively delegate</li>
+</ul></div>
+</div>
+<div class="section">
+<div class="sh"><span class="si">🔄</span><span class="st">Feedback Loop &amp; Pick-Through Method</span></div>
+<div class="proto"><div class="pn">Pick-Through Flow</div><ul class="bl">
+<li><strong>Step 1:</strong> observe movement (A-walk, kick-out, squat, sport-specific drill)</li>
+<li><strong>Step 2:</strong> note what you see — write it down before treating</li>
+<li><strong>Step 3:</strong> one treatment, one pass → retest same movement</li>
+<li><strong>Step 4:</strong> did it change? Yes → next limiter. No → wrong area, try again</li>
+<li>Total trackside budget: <span class="num">90s – 2.5 min</span></li>
+</ul></div>
+<div class="card warn"><div class="ct">The Telephone Game Problem</div><ul class="bl">
+<li>Real case: athlete → "bench press caused chest pain"</li>
+<li>Trainer → said no bench press / Coach → confirmed push-ups done after training</li>
+<li>Three different stories about the same event from three people</li>
+<li>Trackside treatment removes this — treat what you see, when you see it</li>
+</ul></div>
+</div>
+<div class="section">
+<div class="sh"><span class="si">📐</span><span class="st">Dynamic Movement Assessments</span></div>
+<div class="proto"><div class="pn">A-Walk / A-Skip Screen</div><ul class="bl">
+<li>Primary pre/post treatment proxy for ankle and hip function</li>
+<li>Look for: foot turn-out, heel height at top, push-off origin (hip vs calf vs toe), pelvic oscillation</li>
+<li>With 1080 or resistance band — instantly makes the drill a rehab mechanism</li>
+<li>Pelvic oscillation = normal and desirable. A DROP on one side = the problem.</li>
+<li>Pelvic drop = stance leg ankle stability failure on the SAME side (not weak hip on the dropping side)</li>
+</ul></div>
+<div class="proto"><div class="pn">Glute Activation Hop Test</div><ul class="bl">
+<li>Hop in place, place hands on glutes, feel for glute contraction with each landing</li>
+<li><strong>Pass:</strong> strong glute contraction every hop = driving from hip = stiffness present</li>
+<li><strong>Fail:</strong> no glute engagement, push-off felt in calf/knee = stiffness deficit = Achilles/posterior knee risk</li>
+</ul></div>
+<div class="proto"><div class="pn">Weightlifting Squat Screening Battery</div><ul class="bl">
+<li><strong>Pistol squat:</strong> basic single-leg loading assessment (back rounding allowed)</li>
+<li><strong>Shrimp squat:</strong> hip locked in extension — tests true hip flexion under load. Fail = cheating through the back. Fix: deep step-ups, single-leg box squat</li>
+<li><strong>Cossack squat:</strong> knee wide, hip shifted over = adduction + IR. Tests posterior hip expansion. Fix: hip airplanes</li>
+</ul></div>
+</div>
+<div class="section">
+<div class="sh"><span class="si">💪</span><span class="st">Table-Side Rehab &amp; Stability</span></div>
+<div class="card"><div class="ct">Contraction Under Compression (Pliability / Activation)</div><ul class="bl">
+<li>Compress target muscle with thumb → athlete contracts against pressure</li>
+<li><strong>Can contract:</strong> muscle is pliable and active — move on</li>
+<li><strong>Cannot contract:</strong> muscle is hyperpolarised / inhibited</li>
+<li>Do activation reps: contract → relax → repeat until contraction gets smooth, faster, stronger</li>
+<li>Works for: subscap, hip flexor, VMO, adductor magnus, glutes</li>
+<li>Effectively the same stimulus as motor point acupuncture — just with your thumb</li>
+</ul></div>
+<div class="card"><div class="ct">Failure-Based Muscle Stimulus</div><ul class="bl">
+<li>The last rep closest to failure is the stimulus — not the total sets/reps before it</li>
+<li>One true failure = one training session worth of adaptation stimulus</li>
+<li>Rest period before re-stimulus: <span class="num">10–14 days</span> if the failure was genuine</li>
+<li>For trained athletes: their existing training is sufficient — don't add extra volume</li>
+</ul></div>
+<div class="card"><div class="ct">Grip Strength Standards for Manual Therapy</div><ul class="bl">
+<li>Minimum to treat without injuring yourself: <span class="num">40–45 kg</span></li>
+<li>Target for athlete population: <span class="num">60–80 kg</span></li>
+<li>Target for large/loaded athletes: <span class="num">100 kg</span></li>
+<li>Speaker's current: <span class="num">~80 kg</span> (formerly <span class="num">110 kg</span>)</li>
+<li>Team China staff average: <span class="num">~22 kg</span> — necessitates needling and tools</li>
+</ul></div>
+</div>
+<div class="pnotes"><span class="pnlab">📝 Your Notes — Day 1 System</span>
+<textarea id="pn-system" placeholder="Add your own notes here…" oninput="saveNote('system')"></textarea>
+<div class="psaved" id="sv-system">Saved ✓</div></div>
+</div><!-- /system -->
+
+<!-- ===FOOT & ANKLE=== -->
+<div class="tab-panel" id="tab-foot">
+<div class="section">
+<div class="sh"><span class="si">🦶</span><span class="st">Ankle Decision Tree</span></div>
+<div class="proto"><div class="pn">Assessment Order Before Loading</div><ul class="bl">
+<li><strong>Step 1 — Big toe:</strong> MTP flex freely? Stiff or hypermobile?</li>
+<li><strong>Step 2 — Subtalar:</strong> can the calcaneus rock into pronation/supination?</li>
+<li><strong>Step 3 — Gastroc/Soleus:</strong> posterior chain clear?</li>
+<li><strong>Step 4 — Lateral:</strong> peroneal strength and control present?</li>
+<li><strong>Step 5 — Medial:</strong> tib post and arch integrity intact?</li>
+<li>Clear all five before loading the ankle chain in any sport context</li>
+</ul></div>
+<div class="card"><div class="ct">Big Toe Triangle Release</div><ul class="bl">
+<li>Three points around the big toe MTP joint</li>
+<li><span class="num">3–4 reps</span> per spot → neurologic reset of MTP mobility</li>
+<li>Critical for any athlete with bunion pattern, claw toes, or restricted push-off</li>
+<li>Don't mobilise if hypermobile — find the cause (hip extension deficit, ankle plantarflexion deficit) and treat there instead</li>
+</ul></div>
+<div class="card"><div class="ct">Subtalar Scoop — "Unlocking the Foundation"</div><ul class="bl">
+<li>Hold the calcaneus and gently scoop/rock it into pronation</li>
+<li><span class="num">3–5 reps</span> per session</li>
+<li>If the subtalar doesn't unlock, none of the downstream ankle joint functions work</li>
+<li>Athletes who can't pronate → overuse big toe → MTP hypermobility → bunion loading → eventual MTP breakdown</li>
+</ul></div>
+</div>
+<div class="section">
+<div class="sh"><span class="si">🦵</span><span class="st">Posterior Lower Leg — Layered Approach</span></div>
+<div class="card hi"><div class="ct">Same Hand, Three Layers</div><ul class="bl">
+<li><strong>Layer 1 — Gastroc:</strong> knee straight, toes neutral</li>
+<li><strong>Layer 2 — Soleus:</strong> knee bent, toes neutral (gastroc slack)</li>
+<li><strong>Layer 3 — FHL:</strong> knee bent, toes curled (deepest tension exposed)</li>
+<li>All three muscles get <span class="num">~3×</span> the stimulus vs treating each individually</li>
+<li>Total time: <span class="num">~1 minute</span> for all three layers in one hand position</li>
+</ul></div>
+<div class="proto"><div class="pn">Soleus Isolation Test</div><ul class="bl">
+<li>Ask for heel rise → observe</li>
+<li>Manually hold heel → ask same contraction</li>
+<li>Activation only with manual heel support = athlete is pushing through toes, not driving calcaneus up</li>
+<li>Soleus isn't working → treat and then retrain calcaneal drive pattern</li>
+</ul></div>
+</div>
+<div class="section">
+<div class="sh"><span class="si">🦶</span><span class="st">Lateral Leg — Steering Mechanism</span></div>
+<div class="proto"><div class="pn">Peroneal Isolation Test</div><ul class="bl">
+<li>Push foot into eversion → measure resistance</li>
+<li>Curl toes → re-test eversion resistance</li>
+<li>Significant strength loss with toes curled = compensating with toe extensors, peroneus is inhibited</li>
+<li>Implication: ankle instability, foot twisting in push-off, bunion loading</li>
+</ul></div>
+<div class="proto"><div class="pn">Tibialis Anterior Treatment</div><ul class="bl">
+<li>Find the tibia bone, push TA tendon off of it</li>
+<li>Plantarflex → twist foot inward (inversion)</li>
+<li>Key area: along the tibia shaft, not just muscle belly</li>
+<li>Clears: anterior ankle impingement, improves clean dorsiflexion</li>
+</ul></div>
+<div class="proto"><div class="pn">Peroneus Treatment</div><ul class="bl">
+<li>Start at tib-fib joint level</li>
+<li>Work between peroneus and tib ant — don't jam straight down (nerves on lateral side)</li>
+<li>More stretch technique, less compression force</li>
+<li>Work from tip of fibula up the full peroneal length</li>
+</ul></div>
+</div>
+<div class="section">
+<div class="sh"><span class="si">🦵</span><span class="st">Popliteus — Magic Button</span></div>
+<div class="card hi"><div class="ct">Why It's a Magic Button</div><ul class="bl">
+<li>Releasing here addresses: tibial IR, tibial extension, inner hamstrings, medial gastroc, pes anserine, popliteal nerve complex</li>
+<li><strong>Indication:</strong> knee extension pain, ACL post-op, meniscus, MCL, medial knee pain, high calf pain, can't stay upright in single-leg work</li>
+<li>One of the highest-yield release points for any lower limb athlete</li>
+</ul></div>
+<div class="proto"><div class="pn">Finding and Treating</div><ul class="bl">
+<li>DO NOT push midline (vessels + tibial nerve)</li>
+<li>Stay lateral to medial gastroc, aim to touch tibia — it's deep, commit to the depth</li>
+<li>Lateral approach: on the bone medially, scoop in, feel popliteus tendon on tibia</li>
+<li>Hold until pain reduces to <span class="num">50%</span>, then progress to knee extension while holding</li>
+<li>Acupuncture: cleanest needle point here — no vessels on bone approach</li>
+</ul></div>
+</div>
+<div class="pnotes"><span class="pnlab">📝 Your Notes — Foot &amp; Ankle</span>
+<textarea id="pn-foot" placeholder="Add your own notes here…" oninput="saveNote('foot')"></textarea>
+<div class="psaved" id="sv-foot">Saved ✓</div></div>
+</div><!-- /foot -->
+
+<!-- ===HIP=== -->
+<div class="tab-panel" id="tab-hip">
+<div class="section">
+<div class="sh"><span class="si">🏋️</span><span class="st">Hip Philosophy</span></div>
+<div class="card hi"><div class="ct">The Hip Drives Everything</div><ul class="bl">
+<li><em>"If there's anywhere I'll spend most of my time treating — it's the hip."</em></li>
+<li>Treating the hip well resolves a disproportionate share of knee, ankle, back, and shoulder complaints</li>
+<li>The hip is the primary force transfer zone between trunk and lower limb — restriction creates compensatory load in both directions</li>
+<li><strong>Triple extension myth:</strong> only occurs once per race — at start push-off. During top-end speed, athletes are stacked, not in full extension.</li>
+<li>Coaching athletes into extreme hip extension during top-speed running → hamstring tear risk</li>
+</ul></div>
+</div>
+<div class="section">
+<div class="sh"><span class="si">🏋️</span><span class="st">Anterior Hip — Treatment Sequence</span></div>
+<div class="card"><div class="ct">Landmark Map</div><ul class="bl">
+<li>ASIS → find the hole just medial/inferior → in this hole: anterior capsule, rectus femoris tendon, sartorius, TFL</li>
+<li>Lateral to medial: TFL → sartorius → pectineus → inguinal ligament → iliacus → inner pelvic bowl</li>
+<li><strong>Key rule:</strong> find the most restricted structure — treat only that one, not all of them every session</li>
+</ul></div>
+<div class="proto"><div class="pn">1 — Gentle Hip Flexor Release</div><ul class="bl">
+<li>Supine, find inguinal ligament, just above it at oblique line level</li>
+<li>Low thumb/fist pressure, walk the leg away slowly</li>
+<li>Use for: pain-sensitive athletes, elderly, first pass on any athlete</li>
+</ul></div>
+<div class="proto"><div class="pn">2 — Psoas Release (Shortened Ab Position)</div><ul class="bl">
+<li>Supine, posterior pelvic tilt (pillow under lumbar) — shortens abs, gives deeper access</li>
+<li>Enter at belly button level, move toward inguinal ligament</li>
+<li>Athlete pushes knee into hand (hip flexion resistance) to engage psoas</li>
+<li>Rotate leg side to side (small rotation) while pressing down — stretches psoas at vertebral origins</li>
+<li>Best for: low back spasm, hyperextension posture athletes</li>
+</ul></div>
+<div class="proto"><div class="pn">3 — Iliacus-QL Combined Release</div><ul class="bl">
+<li>Supine, knee bent, leg resting on therapist's thigh</li>
+<li>Go lateral to psoas → corner of iliac crest → inner pelvic bowl → iliacus</li>
+<li>Athlete pushes knee into therapist's leg → iliacus engages</li>
+<li>Physically rotate your torso (elbows) to bring the whole spine through — separates iliacus from QL</li>
+<li>Best for: SI joint pain, low back spasm, post-heavy lifting</li>
+</ul></div>
+<div class="proto"><div class="pn">4 — Sidelying Iliacus Stretch</div><ul class="bl">
+<li>Sidelying, both hands find iliacus and stretch apart</li>
+<li>Athlete reaches arms and legs to fold around therapist</li>
+<li>Best for: basketball, volleyball, racket sports, javelin — full extension-rotation pattern</li>
+</ul></div>
+<div class="proto bp"><div class="pn">6 — Hip Capsule / FAI Technique ⚠️ Advanced Only</div><ul class="bl">
+<li>Only after ALL soft tissue work is done and pinching still persists</li>
+<li>Athlete rotates leg into IR, pulls knee to chest</li>
+<li>Therapist thumb over ASIS/pectineus area as fulcrum — thigh folds over thumb → gaps anterior-superior joint</li>
+<li>Athlete controls rotation — therapist guides direction, does NOT twist knee</li>
+<li><strong>Contraindicated:</strong> recent MCL injury, hip replacement, patient intolerant</li>
+</ul></div>
+</div>
+<div class="section">
+<div class="sh"><span class="si">🏋️</span><span class="st">Posterior Hip — Glute / Piriformis</span></div>
+<div class="proto"><div class="pn">Greater Trochanter Pass</div><ul class="bl">
+<li>All the way around the greater trochanter — releases all tendon attachments at once</li>
+<li>Palpate for tightest spot → hold → bring knee to chest</li>
+<li>Neurologically more efficient than chasing individual muscle bellies</li>
+</ul></div>
+<div class="proto"><div class="pn">Piriformis — Partner Version (Preferred)</div><ul class="bl">
+<li>Midpoint between greater trochanter and sacrum</li>
+<li>Partner assists leg to <span class="num">90°</span>, guides into external rotation while therapist maintains pressure</li>
+<li>Indication: proximal hamstring pain, SI joint pain, pain at bottom of squat</li>
+<li>Solo version significantly less effective</li>
+</ul></div>
+</div>
+<div class="section">
+<div class="sh"><span class="si">🏋️</span><span class="st">Groin / Adductor Sequence</span></div>
+<div class="proto"><div class="pn">Adductor Magnus Separation from Hamstring — KEY TECHNIQUE</div><ul class="bl">
+<li>Fall off adductor longus medially → feel gracilis → pass underneath → diagonal up toward femur</li>
+<li>Leg in abduction + IR → athlete extends knee</li>
+<li>Purpose: separate adductor magnus from hamstrings — they jam up and restrict both hip extension AND knee extension</li>
+<li>Adductor magnus = powerful hip extensor — undertrained and undertreated in almost every sport</li>
+<li>Train with: deep step-ups, RDL, split squat at full depth, lunges</li>
+</ul></div>
+</div>
+<div class="section">
+<div class="sh"><span class="si">⚡</span><span class="st">Motor Point Acupuncture / E-Stim</span></div>
+<div class="card"><div class="ct">Target: Monoarticular Muscles Only</div><ul class="bl">
+<li>Only muscles crossing one joint: VMO, adductor magnus, popliteus, brachialis, short supinator, foot intrinsics</li>
+<li>When inhibited, they hyperpolarise — slower to contract, delays reaction time by milliseconds</li>
+<li>Top 3 needle targets for hip/knee: VMO, adductor magnus, popliteus</li>
+<li>Resting membrane potential: <span class="num">−72 mV</span> — hyperpolarised = takes longer to fire</li>
+</ul></div>
+<table class="dtable">
+<thead><tr><th>Setting</th><th>Frequency</th><th>Indication</th></tr></thead>
+<tbody>
+<tr><td>Swelling / post-op</td><td>1 Hz</td><td>Slow pulse, decongestive effect</td></tr>
+<tr><td>Early rehab</td><td>2 Hz</td><td>Early neuromuscular activation</td></tr>
+<tr><td>Neuromuscular re-ed</td><td>10 Hz</td><td>Rhythmic contraction-relaxation</td></tr>
+<tr><td>Spasm</td><td>High intensity</td><td>Hard contraction → full relaxation cycle</td></tr>
+<tr><td>Spine</td><td>Pads × 30 min</td><td>Too many segments for individual needling</td></tr>
+</tbody>
+</table>
+</div>
+<div class="pnotes"><span class="pnlab">📝 Your Notes — Hip</span>
+<textarea id="pn-hip" placeholder="Add your own notes here…" oninput="saveNote('hip')"></textarea>
+<div class="psaved" id="sv-hip">Saved ✓</div></div>
+</div><!-- /hip -->
+
+<!-- ===SHOULDER=== -->
+<div class="tab-panel" id="tab-shoulder">
+<div class="section">
+<div class="sh"><span class="si">🦾</span><span class="st">Shoulder Philosophy</span></div>
+<div class="card hi"><div class="ct">Long Lever Muscles Are the Priority</div><ul class="bl">
+<li>Muscles farthest from the shoulder joint create the most tension at the shoulder</li>
+<li>Small tightness in the lat = large effect at the shoulder joint</li>
+<li>Priority order: <strong>Lat (king)</strong> → Pec major/minor → Tricep long head → Teres major</li>
+<li>Deltoid tightness <em>"rarely, rarely matters"</em> — don't start there</li>
+</ul></div>
+<div class="card hi"><div class="ct">The Hip Powers the Shoulder</div><ul class="bl">
+<li>In any throwing, lifting, swinging, or racket sport — hip rotation restriction → shoulder compensates for velocity deficit</li>
+<li><em>"80% of rotator cuff issues in weightlifting are a hip problem"</em></li>
+<li>Fix hip first, then shoulder — this is the correct sequence</li>
+</ul></div>
+<div class="card"><div class="ct">Fixed Points Enable Shoulder Movement</div><ul class="bl">
+<li>Open-chain shoulder movement requires fixed proximal points</li>
+<li>Cervical spine and thoracic spine must stabilise for the shoulder to create force</li>
+<li>A loose neck = trap takes over = shoulder mechanics collapse</li>
+<li>Treatment order: thoracic and neck before shoulder joint</li>
+</ul></div>
+</div>
+<div class="section">
+<div class="sh"><span class="si">🦾</span><span class="st">Lat Treatment</span></div>
+<div class="proto"><div class="pn">Lat — Tricep Tendon Entry</div><ul class="bl">
+<li>Find tricep tendon (long head), trace it proximally</li>
+<li>Lat sits just anterior to it, intertwined — get between tricep tendon and lat, pin and stretch</li>
+<li>Raise arm overhead through full range while holding</li>
+<li>Purpose: dissociate lat from teres, allow scapula to upwardly rotate freely</li>
+</ul></div>
+<div class="proto"><div class="pn">Lat — Inferior Scapular Border</div><ul class="bl">
+<li>Find inferior border of scapula — pull skin away first before pushing down</li>
+<li>Hold inferior border, athlete raises arm overhead</li>
+<li>Instant restriction often felt — lat is holding the scapula down, preventing upward rotation</li>
+<li>After release: scapula should glide up freely as arm rises</li>
+</ul></div>
+<div class="proto"><div class="pn">Lat — TL Junction (T12 Area)</div><ul class="bl">
+<li>At lower ribs, off the edge of the erectors at T12 level</li>
+<li>Key magic spot: affects QL, low back, trunk rotation, breathing, shoulder function simultaneously</li>
+<li>Hold here, arm goes overhead, then shift arm around</li>
+<li>Affects: T12/L1 facet rotation, QL, lower ribs, rib flare patterns</li>
+</ul></div>
+<div class="proto"><div class="pn">Lat — Lower Armpit / Serratus Release (Sidelying)</div><ul class="bl">
+<li>Sidelying, pull shoulder blade up (or knee under to support)</li>
+<li>Go under the lat, over the serratus, along the ribs — knife-edge technique</li>
+<li>Never push into ribs — always along the contour of the rib cage</li>
+<li>Feel for: scapula adhered to rib cage (tissue bridges going across)</li>
+<li>As arm raises overhead, fingers should feel scapula gliding under them</li>
+</ul></div>
+</div>
+<div class="section">
+<div class="sh"><span class="si">🦾</span><span class="st">Pec &amp; Subscap Treatment</span></div>
+<div class="proto"><div class="pn">Pec Release — Three Anchor Points</div><ul class="bl">
+<li><strong>Anterior deltoid:</strong> hold down, externally rotate, work through</li>
+<li><strong>Under collarbone (subclavius):</strong> proximal third of clavicle, go down, find pec head. Hold clavicle with one hand, push pec with other → externally rotate and row down. Peels pec from clavicle. Key for weightlifters with "jammed back" in front rack.</li>
+<li><strong>Pec minor (along ribs underneath):</strong> go along rib from below, push up into it, pull off to side</li>
+</ul></div>
+<div class="card"><div class="ct">Finding Subscap — "Yoga Mat on the Floor"</div><ul class="bl">
+<li>When fingers are on subscap: soft, squishy (yoga mat) with hard bone underneath</li>
+<li>Only feel soft muscle, no hard surface = not deep enough, go deeper</li>
+</ul></div>
+<div class="proto"><div class="pn">Subscap — Contraction Test First</div><ul class="bl">
+<li>Get onto subscap → ask athlete to internally rotate against your thumb</li>
+<li>Can push you off → contracting — move to release</li>
+<li>Cannot contract → do activation reps: push in, athlete contracts, relax, repeat until strong</li>
+<li>This IS the treatment for weak subscap before doing manual release</li>
+</ul></div>
+<div class="proto wp"><div class="pn">Subscap Frequency ⚠️</div><ul class="bl">
+<li>Max once every <span class="num">~2 weeks</span> — very bruisy</li>
+<li>For athletes post-snatch/jerk: quick <span class="num">10-second</span> version to "open the shoulder" before a set</li>
+</ul></div>
+<div class="proto"><div class="pn">Subscap Stability Test</div><ul class="bl">
+<li>Athlete: elbow down, internally rotate, hold position</li>
+<li>Therapist: try to lift athlete off table by this arm</li>
+<li><strong>Pass:</strong> athlete stays locked in, whole body comes up together</li>
+<li><strong>Fail:</strong> athlete folds / elbow goes up → subscap cannot stabilise</li>
+<li>Use for: rotator cuff stability assessment, instability cases, overhead sport athletes</li>
+</ul></div>
+</div>
+<div class="section">
+<div class="sh"><span class="si">🦾</span><span class="st">Neck &amp; Upper Trap</span></div>
+<div class="card warn"><div class="ct">Key Rule: Be Very Gentle with the Neck</div><ul class="bl">
+<li>Cervical spine is protecting the most important part of the body</li>
+<li>Aggressive neck treatment causes guarding — the opposite of what's needed</li>
+<li><em>"With aggressive athletes, they can't work the next day if you go too hard."</em></li>
+</ul></div>
+<div class="card"><div class="ct">Upper Trap Myth</div><ul class="bl">
+<li>Upper trap is demonised as "always tight and bad"</li>
+<li>Reality: it must have tension because it's fighting gravity all the time</li>
+<li>In many athletes it's actually too weak — gravity overworks it, or it compensates because the shoulder can't glide well</li>
+<li>Treat to offload and let smaller scapular muscles work — not to eliminate tension entirely</li>
+</ul></div>
+</div>
+<div class="pnotes"><span class="pnlab">📝 Your Notes — Shoulder</span>
+<textarea id="pn-shoulder" placeholder="Add your own notes here…" oninput="saveNote('shoulder')"></textarea>
+<div class="psaved" id="sv-shoulder">Saved ✓</div></div>
+</div><!-- /shoulder -->
+
+<!-- ===OTHER=== -->
+<div class="tab-panel" id="tab-other">
+<div class="section">
+<div class="sh"><span class="si">🖐️</span><span class="st">Wrist Treatment</span></div>
+<div class="card"><div class="ct">Wrist Assessment Logic</div><ul class="bl">
+<li>The wrist is very mobile — many joints can be the pain source. Big 3: Lunate, Scaphoid, TFCC</li>
+<li><strong>Thumb side:</strong> strength and force production issues</li>
+<li><strong>Pinky side (TFCC):</strong> strength elements of the wrist</li>
+<li><strong>Rotation test:</strong> hold wrist, twist — if wrist torques instead of staying locked = rotation isn't working — this is the primary finding to treat</li>
+</ul></div>
+<div class="proto"><div class="pn">Pronator Quadratus Release — Primary Technique</div><ul class="bl">
+<li>Fingers under flexor carpi ulnaris, vice grip technique, push across</li>
+<li>Hold pronator quadratus while actively supinating the wrist</li>
+<li>Start with rotation only → then add wrist extension → then add fingers — never all at once</li>
+<li>Very intense — described as "miraculous" for TFCC pain and crushing grip pain (baseball, golf)</li>
+</ul></div>
+<div class="card"><div class="ct">Wrist in Barbell Sports</div><ul class="bl">
+<li>Straight bar forces fixed rotation — if forearm rotation compromised, torque goes to wrist</li>
+<li>Short-term: switch to dumbbells. Long-term: restore forearm rotation.</li>
+<li>Front rack: if tricep/lat don't release, elbows can't come up, weight sits on wrists instead of deltoids</li>
+</ul></div>
+<div class="card"><div class="ct">Tennis / Golfer's Elbow</div><ul class="bl">
+<li>Go to shoulder first — check external rotation</li>
+<li>Restricted shoulder ER → athlete pre-cocks wrist to fake rotation → overloads elbow repeatedly</li>
+<li>Fix shoulder rotation first, then address the elbow</li>
+</ul></div>
+</div>
+<div class="section">
+<div class="sh"><span class="si">🏃</span><span class="st">Acute Hamstring Management</span></div>
+<div class="card hi"><div class="ct">Spasm vs. Tear — The Key Distinction</div><ul class="bl">
+<li><strong>Feel a dip on palpation:</strong> tear → protect, ice immediately, do NOT load</li>
+<li><strong>Feel firmness but no dip:</strong> likely cramp/spasm → offload treatment, keep moving, cool down</li>
+<li>Many "hamstring tears" in sprinters are actually cramps at max speed — heals much faster if managed correctly</li>
+</ul></div>
+<div class="proto"><div class="pn">Acute Offload Protocol</div><ul class="bl">
+<li>Wiggle the leg to loosen, then long-axis traction (hip into therapist, gentle motion)</li>
+<li>Groin/adductor gliding — take tension off everything connecting to the hamstring</li>
+<li>Work through the calf and popliteus area — take tension off the distal end</li>
+<li>Palpate the hamstring for a dip before going near it</li>
+<li>Work ALL AROUND the injured site — not on it. Let the area breathe.</li>
+<li>After every pass: recheck — more motion? Good. Flaring? Stop.</li>
+</ul></div>
+<div class="card warn"><div class="ct">Ice Timing</div><ul class="bl">
+<li>Immediate ice is high value — drops swelling fast</li>
+<li>After the initial window (<span class="num">10–20 min × 2 bags</span>), shift to blood flow strategies</li>
+<li>Don't keep icing — you need vasodilation and blood flow to flush the area</li>
+</ul></div>
+<div class="card"><div class="ct">Timeline Reference</div><ul class="bl">
+<li>True spasm = can return to running in <span class="num">5–10 days</span></li>
+<li>Spasm at top speed = still looking at <span class="num">~8 weeks</span> because surrounding structures took the impact</li>
+<li>Cool down: <span class="num">~20 min</span> bike, light jog, blood flow work after acute management</li>
+</ul></div>
+</div>
+<div class="section">
+<div class="sh"><span class="si">🦵</span><span class="st">Plantar Fascia</span></div>
+<div class="card"><div class="ct">Densification Concept</div><ul class="bl">
+<li>Italian research (fascia): hyaluronic acid fills dense fascial layers under repeated compression → pressure, heat, friction</li>
+<li>Densification threshold: <span class="num">~3 min 40 sec</span> of sustained treatment before tissue begins to release</li>
+<li>Can't do quick passes and expect real change — must work through the full time window</li>
+</ul></div>
+<div class="proto"><div class="pn">Plantar Fascia Protocol (Indirect)</div><ul class="bl">
+<li>Work the tibial nerve first: curl toes → take slack → go back to normal → work along tibial nerve path</li>
+<li>Back of knee (popliteal area): same neural offload technique</li>
+<li>Piriformis: compress and move off</li>
+<li>Offloads the nerve contribution to pain without touching the plantar fascia directly</li>
+</ul></div>
+<div class="proto"><div class="pn">Metatarsal Head Mobilisation</div><ul class="bl">
+<li>Adjacent metatarsal heads: push one up, one down → flip → repeat along all heads with restriction</li>
+<li>Mobilises plantar fascia along all metatarsal attachments simultaneously</li>
+<li>Combined with tibial nerve offload = <span class="num">~80%</span> of cases respond well</li>
+</ul></div>
+</div>
+<div class="pnotes"><span class="pnlab">📝 Your Notes — Wrist / Hamstring / Fascia</span>
+<textarea id="pn-other" placeholder="Add your own notes here…" oninput="saveNote('other')"></textarea>
+<div class="psaved" id="sv-other">Saved ✓</div></div>
+</div><!-- /other -->
+
+<!-- ===ALL DATA=== -->
+<div class="tab-panel" id="tab-data">
+<div class="section">
+<div class="sh"><span class="si">📊</span><span class="st">All Data, Numbers &amp; Thresholds</span></div>
+<table class="dtable">
+<thead><tr><th>Metric / Finding</th><th>Value</th><th>Context</th></tr></thead>
+<tbody>
+<tr><td>Triple extension in sprinting</td><td>Once per race</td><td>Start push-off only. Not at top-end speed.</td></tr>
+<tr><td>Normal hip extension ROM</td><td>20–30°</td><td>Commonly taught. 40° and 70° also referenced.</td></tr>
+<tr><td>Running ground reaction force</td><td>8–12× BW</td><td>Achilles load during sprinting. Full chain must share load.</td></tr>
+<tr><td>Post-treatment soreness</td><td>2–4 days</td><td>Expected for aggressive treatment of restricted tissue.</td></tr>
+<tr><td>Treatment budget (trackside)</td><td>90s – 2.5 min</td><td>Before coach objects. Typical performance therapy window.</td></tr>
+<tr><td>Clinic treatment target</td><td>5 min</td><td>Still leaves 25 min for relationship + load management.</td></tr>
+<tr><td>Protective tension zone</td><td>Last ~20%</td><td>End of range tension = normal. Leave alone.</td></tr>
+<tr><td>Pre-MRI treatment washout</td><td>~1 week</td><td>No treatment to area before imaging.</td></tr>
+<tr><td>Grip strength: minimum</td><td>40–45 kg</td><td>To treat without self-injury.</td></tr>
+<tr><td>Grip strength: athlete population</td><td>60–80 kg</td><td>Confident treatment of most athletic bodies.</td></tr>
+<tr><td>Grip strength: large athletes</td><td>100 kg</td><td>Working with heavy/loaded athletes.</td></tr>
+<tr><td>Speaker's grip strength</td><td>~80 kg</td><td>Formerly 110 kg.</td></tr>
+<tr><td>Team China staff average grip</td><td>~22 kg</td><td>Why acupuncture is essential for their staff.</td></tr>
+<tr><td>E-stim: post-op/swelling</td><td>1 Hz</td><td>Slow pulsing, decongestive</td></tr>
+<tr><td>E-stim: early rehab</td><td>2 Hz</td><td>Early neuromuscular activation</td></tr>
+<tr><td>E-stim: neuromuscular re-ed</td><td>10 Hz</td><td>Rhythmic contraction-relaxation</td></tr>
+<tr><td>Muscle re-stimulus frequency</td><td>10–14 days</td><td>If genuine failure stimulus was achieved</td></tr>
+<tr><td>Fascial treatment threshold</td><td>~3 min 40 sec</td><td>Italian research — hyaluronic acid densification releases</td></tr>
+<tr><td>Subscap treatment frequency</td><td>Max every ~2 weeks</td><td>Very bruisy technique</td></tr>
+<tr><td>Plantar fascia protocol response</td><td>~80%</td><td>Tibial nerve offload + metatarsal head mobilisation</td></tr>
+<tr><td>Hamstring spasm return to run</td><td>5–10 days</td><td>If truly spasm only, no structural tear</td></tr>
+<tr><td>Hamstring spasm at top speed</td><td>~8 weeks</td><td>Surrounding structures take impact even without a tear</td></tr>
+<tr><td>Ice application post-hamstring</td><td>10–20 min × 2 bags</td><td>Immediate application, then shift to blood flow</td></tr>
+<tr><td>Popliteus: hold until pain reduces</td><td>50%</td><td>Before progressing to knee extension while holding</td></tr>
+<tr><td>Big toe release reps</td><td>3–4 per spot</td><td>Per area of the triangle</td></tr>
+<tr><td>Subtalar scoop reps</td><td>3–5</td><td>Per session</td></tr>
+<tr><td>Layered calf treatment time</td><td>~1 minute total</td><td>All three layers (gastroc, soleus, FHL) one hand position</td></tr>
+<tr><td>Resting membrane potential</td><td>−72 mV</td><td>Threshold for contraction. Hyperpolarised = slower to fire.</td></tr>
+<tr><td>Piriformis partner assist angle</td><td>90°</td><td>Leg position before guiding into external rotation</td></tr>
+<tr><td>Hip deficit in kinematic chain</td><td>−200 m/s</td><td>Has to be compensated elsewhere — shoulder takes the load</td></tr>
+<tr><td>Cool down post acute hamstring</td><td>~20 min</td><td>Bike, light jog, blood flow work</td></tr>
+<tr><td>Sprinter instability case: off-treatment</td><td>3 months</td><td>Plus 2–3 min performance therapy 2–3x/week only</td></tr>
+</tbody>
+</table>
+<div class="card flag"><div class="ct">⚑ No Formal Research Citations</div><ul class="bl">
+<li>All data from clinical experience and observation unless otherwise noted</li>
+<li>MLB kinematic research referenced but not formally cited</li>
+<li>Italian fascial densification research referenced but not cited — likely Stecco lab</li>
+<li>Independently verify before using in publications or clinical claims</li>
+</ul></div>
+</div>
+</div><!-- /data -->
+
+<!-- ===FULL NOTES=== -->
+<div class="tab-panel" id="tab-fullnotes">
+<div class="section">
+<div class="sh"><span class="si">🔍</span><span class="st">Full Notes — Flat Search View</span></div>
+<div class="card" style="margin-bottom:16px"><ul class="bl">
+<li>Every point from both days is listed here in one scrollable column</li>
+<li>Use the search bar above to highlight any keyword across all notes instantly</li>
+<li>Non-matching sections fade out automatically when you search</li>
+<li>Add your own notes in the box at the bottom</li>
+</ul></div>
+</div>
+<div id="fn-no" class="fn-no">No matches found for this search term.</div>
+
+<div class="fn-s">
+<div class="fn-day">Overview</div>
+<div class="fn-head">Core Thesis</div>
+<div class="fn-i">Every table treatment must directly improve the athlete's ability to handle sport demands</div>
+<div class="fn-i">Clinical question: not "what is wrong?" — "what limits this athlete's ability to perform?"</div>
+<div class="fn-i">Return to sport is the floor, not the ceiling</div>
+<div class="fn-i">Treatment without immediate movement feedback is guesswork</div>
+<div class="fn-i">Pick-Through method: treat → retest movement → treat → retest — each pass gives you data</div>
+<div class="fn-i">Trackside treatment removes the telephone game between injury, clinic, and training floor</div>
+<div class="fn-i">Treatment nudges athletes toward better mechanics — coaching reinforces it — without both, neither works</div>
+<div class="fn-i">The hip is the central driver — treating it resolves a disproportionate share of knee, ankle, back, and shoulder complaints</div>
+<div class="fn-i">Pliability test: compress a muscle — if athlete cannot actively move through it = cannot handle loaded sport movement</div>
+<div class="fn-i">Passive range and functional tissue quality are not the same thing</div>
+</div>
+
+<div class="fn-s">
+<div class="fn-day">Overview</div>
+<div class="fn-head">Key Concepts &amp; Numbers</div>
+<div class="fn-i">Treatment budget: <span class="num">90s–2.5 min</span> trackside — <span class="num">5 min</span> max before coaches object</div>
+<div class="fn-i"><span class="num">5 min</span> clinic still leaves <span class="num">25 min</span> for relationship, load management, history</div>
+<div class="fn-i"><strong>Aberrant tension:</strong> within range, restricts before end range — treat this</div>
+<div class="fn-i"><strong>Protective tension:</strong> last <span class="num">~20%</span> of range — normal, leave alone</div>
+<div class="fn-i">No tension / looseness = instability — don't mobilise more</div>
+<div class="fn-i">Weak muscles feel tight when first loaded — that's DOMS, not dysfunction — training fixes it, treating it blocks adaptation</div>
+<div class="fn-i">Never ask athletes what hurts — movement is the measure</div>
+<div class="fn-i">"If shit moves better, you did a good job."</div>
+<div class="fn-i">Ground reaction force in sprinting: <span class="num">8–12× BW</span> — entire chain must share load</div>
+<div class="fn-i">Calf/ankle-dominant push-off = stiffness deficit = Achilles problems, posterior knee pain, bunions, claw toes</div>
+<div class="fn-i">Surface tissues must be released before accessing deeper structures</div>
+<div class="fn-i">Knee bent = gastroc slack, soleus exposed. Toes curled = FHL exposed.</div>
+<div class="fn-i">Long lever muscles (Lat, Pec, Tricep LH) dominate the shoulder — small tightness in lat = large tension at shoulder</div>
+<div class="fn-i">Hip rotation restriction → shoulder compensates for velocity deficit: <span class="num">−200 m/s</span> hip deficit → shoulder takes the load</div>
+<div class="fn-i">"80% of rotator cuff issues in weightlifting are a hip problem"</div>
+<div class="fn-i">One true failure = one training session worth of adaptation stimulus</div>
+<div class="fn-i">Muscle re-stimulus frequency: <span class="num">10–14 days</span> if the failure was genuine</div>
+<div class="fn-i">For trained athletes: the sport IS the rehab — don't add extra volume</div>
+</div>
+
+<div class="fn-s">
+<div class="fn-day">Overview</div>
+<div class="fn-head">Nuances &amp; Red Flags</div>
+<div class="fn-i">Treating an unstable athlete aggressively = making them worse (top-10-Asian 100m sprinter case)</div>
+<div class="fn-i"><span class="num">3 months</span> off treatment + <span class="num">2–3 min</span> performance therapy <span class="num">2–3×/week</span> resolved the sprinter case</div>
+<div class="fn-i">Athlete tightens into rotation = stability deficit, NOT tissue restriction — do NOT mobilise aggressively</div>
+<div class="fn-i">Very loose big toe passive ROM = compensating for insufficient hip extension or ankle plantarflexion — treat those, not the toe</div>
+<div class="fn-i">Track bunions = poor push-off mechanics (fix coaching). Tennis bunions = adaptation (manage load).</div>
+<div class="fn-i">No treatment to area for <span class="num">~1 week</span> before MRI — acupuncture creates inflammation that distorts imaging</div>
+<div class="fn-i">Subscap: max once every <span class="num">~2 weeks</span> — very bruisy</div>
+<div class="fn-i">Post-treatment soreness: <span class="num">2–4 days</span> expected — warn athletes in advance</div>
+<div class="fn-i">"From clinical experience. It's definitely not Cochrane."</div>
+</div>
+
+<div class="fn-s">
+<div class="fn-day">Overview</div>
+<div class="fn-head">Coaching Cues</div>
+<div class="fn-i">"The goal is not to go back to sport. It's to win the sport."</div>
+<div class="fn-i">"The smaller you can make the feedback loop, the better your outcomes."</div>
+<div class="fn-i">"You can't out-treat bad coaching."</div>
+<div class="fn-i">"I never ask what hurts. I want to see if shit is moving well."</div>
+<div class="fn-i">"A weak muscle doesn't need to be looser. It needs to get stronger."</div>
+<div class="fn-i">"If you put ice on something long enough, it goes numb — that's not treatment, that's anaesthesia."</div>
+<div class="fn-i">"Pick one thing. One pass. Then let them train. That is the skill."</div>
+<div class="fn-i">"If it's tight within the range, treat it. If it's tight at the end, leave it alone."</div>
+<div class="fn-i">"Put your hands on your glutes and hop — you should feel that kick every single time."</div>
+<div class="fn-i">"Only at the start push-off do you hit triple extension. After that, you're just stacked."</div>
+<div class="fn-i">"The adductor magnus is one of the most powerful hip extensors — and almost no one trains or treats it."</div>
+<div class="fn-i">"Fix the lat, fix most issues."</div>
+</div>
+
+<div class="fn-s">
+<div class="fn-day">Day 1 — System</div>
+<div class="fn-head">Champion Builder / Pick-Through / Assessments</div>
+<div class="fn-i">Pillar 1: Find the Limiter — what actually prevents performance, not what the diagnosis is</div>
+<div class="fn-i">Pillar 2: Create the Plan — broken → podium, not broken → return to sport</div>
+<div class="fn-i">Pillar 3: Modify Training — keep training stimulus while managing injury</div>
+<div class="fn-i">Pillar 4: Use the Sport as Rehab — sport drills ARE the rehab mechanism</div>
+<div class="fn-i">Telephone game case: athlete → trainer → coach = 3 different stories about the same injury event</div>
+<div class="fn-i">A-Walk screen: foot turn-out, heel height, push-off origin (hip vs calf vs toe), pelvic oscillation</div>
+<div class="fn-i">Pelvic drop = stance leg ankle stability failure on the SAME side — not weak hip on the dropping side</div>
+<div class="fn-i">Glute hop test: hands on glutes, hop — strong glute contraction every landing = pass. No contraction = calf dominant.</div>
+<div class="fn-i">Shrimp squat: hip locked in extension. Fail = cheating through the back. Fix: deep step-ups, single-leg box squat.</div>
+<div class="fn-i">Cossack squat: tests posterior hip expansion. Fix: hip airplanes.</div>
+<div class="fn-i">Pliability test: compress muscle → athlete contracts against pressure → cannot contract = hyperpolarised → activation reps</div>
+<div class="fn-i">Reactive stability: push athlete while they hold plank/bear. Pre-comp = stimulate, not sedate.</div>
+<div class="fn-i">Grip strength — minimum: <span class="num">40–45 kg</span> / athlete: <span class="num">60–80 kg</span> / large: <span class="num">100 kg</span> / Team China avg: <span class="num">~22 kg</span></div>
+</div>
+
+<div class="fn-s">
+<div class="fn-day">Day 1 — Foot &amp; Ankle</div>
+<div class="fn-head">Ankle Decision Tree + Posterior Leg + Popliteus</div>
+<div class="fn-i">Ankle decision tree order: big toe → subtalar → gastroc/soleus → lateral (peroneal) → medial (tib post)</div>
+<div class="fn-i">Big toe triangle release: <span class="num">3–4 reps</span> per spot around MTP joint — neurologic reset</div>
+<div class="fn-i">Subtalar scoop: hold calcaneus, rock into pronation, <span class="num">3–5 reps</span> — if this doesn't unlock, nothing downstream works</div>
+<div class="fn-i">Athletes who can't pronate → overuse big toe → MTP hypermobility → bunion loading → MTP breakdown</div>
+<div class="fn-i">Layered calf: knee straight = gastroc / knee bent = soleus / toes curled = FHL. One hand, three layers, <span class="num">~1 min</span></div>
+<div class="fn-i">Each layer gets <span class="num">~3×</span> the stimulus vs treating individually</div>
+<div class="fn-i">Soleus isolation test: activation only with manual heel support = athlete pushing through toes, not calcaneus</div>
+<div class="fn-i">Peroneal isolation test: eversion strength drops with toes curled = peroneal inhibition (toe extensors compensating)</div>
+<div class="fn-i">Tib ant treatment: push TA tendon off tibia. Plantarflex → inversion. Work along tibia shaft. Clears anterior ankle impingement.</div>
+<div class="fn-i">Peroneus treatment: start at tib-fib joint. More stretch, less compression. Work from tip of fibula upward.</div>
+<div class="fn-i">Popliteus = magic button: releases tibial IR, tibial extension, inner hamstrings, medial gastroc, pes anserine, popliteal nerve</div>
+<div class="fn-i">Popliteus: stay lateral to medial gastroc, aim for tibia. Hold until pain reduces to <span class="num">50%</span>, then progress to knee extension while holding.</div>
+</div>
+
+<div class="fn-s">
+<div class="fn-day">Day 1 — Hip</div>
+<div class="fn-head">Hip Treatment Sequences</div>
+<div class="fn-i">"If there's anywhere I'll spend most of my time treating — it's the hip."</div>
+<div class="fn-i">Triple extension: only once per race (start push-off). Top-end speed = stacked, not extended. Coaching extreme hip ext at top speed → hamstring tear risk.</div>
+<div class="fn-i">Anterior hip landmark: ASIS hole → TFL → sartorius → pectineus → inguinal lig → iliacus → pelvic bowl</div>
+<div class="fn-i">Key rule: find the most restricted structure — treat only that one, not all of them every time</div>
+<div class="fn-i">Psoas release: posterior pelvic tilt shortens abs → deeper access. Enter at belly button, move toward inguinal lig. Rotate leg side to side while pressing. Best for low back spasm.</div>
+<div class="fn-i">Iliacus-QL release: rotate torso (elbows) to separate iliacus from QL. Best for SI joint pain, low back spasm, post-heavy lifting.</div>
+<div class="fn-i">Sidelying iliacus stretch: athlete reaches arms and legs to fold around therapist. Best for basketball, volleyball, racket sports.</div>
+<div class="fn-i">FAI technique: ONLY after all soft tissue work done. Contraindicated: recent MCL, hip replacement, intolerant patient.</div>
+<div class="fn-i">Greater trochanter pass: all the way around = releases all tendon attachments at once. More efficient than chasing individual muscle bellies.</div>
+<div class="fn-i">Piriformis: midpoint between GT and sacrum. Partner version significantly more effective than solo.</div>
+<div class="fn-i">Adductor magnus separation: fall off add longus → under gracilis → diagonal toward femur. Leg in abduction + IR → athlete extends knee. Separates add mag from hamstrings.</div>
+<div class="fn-i">Adductor magnus training: deep step-ups, RDL, split squat at full depth, lunges</div>
+<div class="fn-i">Motor point / e-stim target: monoarticular muscles only (VMO, add mag, popliteus, brachialis, foot intrinsics)</div>
+<div class="fn-i">E-stim: 1 Hz = post-op/swelling / 2 Hz = early rehab / 10 Hz = neuromuscular re-ed / High = spasm</div>
+<div class="fn-i">Resting membrane potential: <span class="num">−72 mV</span> — hyperpolarised = slower to fire, delays reaction time by milliseconds</div>
+</div>
+
+<div class="fn-s">
+<div class="fn-day">Day 2 — Shoulder</div>
+<div class="fn-head">Shoulder Treatment System</div>
+<div class="fn-i">Priority order: Lat → Pec major/minor → Tricep LH → Teres major. Deltoid "rarely, rarely matters."</div>
+<div class="fn-i">Fix hip first, then shoulder — hip restriction = shoulder overload at end of kinematic chain</div>
+<div class="fn-i">Treatment order: thoracic and neck before shoulder joint</div>
+<div class="fn-i">Lat — tricep tendon entry: get between tricep tendon and lat. Raise arm overhead while holding. Dissociates lat from teres.</div>
+<div class="fn-i">Lat — inferior scapular border: hold inferior border, arm overhead. Scapula should glide up freely after release.</div>
+<div class="fn-i">Lat — TL junction (T12): key magic spot. Affects QL, low back, trunk rotation, breathing, shoulder function simultaneously.</div>
+<div class="fn-i">Lat — lower armpit/serratus: knife-edge along ribs. Never push into ribs. Feel for scapula adhered to rib cage.</div>
+<div class="fn-i">Pec release — 3 anchor points: anterior deltoid / under collarbone (subclavius) / pec minor along ribs</div>
+<div class="fn-i">Subscap: feels like yoga mat on floor — soft and squishy with hard bone underneath. If no hard surface = not deep enough.</div>
+<div class="fn-i">Subscap: always do contraction test first. Cannot contract = do activation reps. Max treatment frequency: every <span class="num">~2 weeks</span>.</div>
+<div class="fn-i">Subscap stability test: whole body comes up together = pass. Elbow goes up = fail (subscap cannot stabilise).</div>
+<div class="fn-i">Neck: be very gentle. Aggressive treatment causes guarding — the opposite of what's needed.</div>
+<div class="fn-i">Upper trap: in many athletes it's too weak — overworked by gravity or compensating for poor shoulder glide. Don't eliminate tension entirely.</div>
+</div>
+
+<div class="fn-s">
+<div class="fn-day">Day 2 — Wrist / Hamstring / Plantar Fascia</div>
+<div class="fn-head">Wrist, Hamstring &amp; Plantar Fascia</div>
+<div class="fn-i">Wrist assessment: rotation test = hold wrist, twist — if torques = rotation isn't working. Primary finding to treat.</div>
+<div class="fn-i">Pronator quadratus release: fingers under FCU, vice grip, push across. Start rotation → then extension → then fingers. Never all at once.</div>
+<div class="fn-i">Wrist in barbell sports: straight bar forces fixed rotation — if forearm rotation compromised, torque goes to wrist. Fix = restore forearm rotation.</div>
+<div class="fn-i">Tennis/golfer's elbow: fix shoulder ER first. Restricted shoulder ER → athlete pre-cocks wrist → overloads elbow repeatedly.</div>
+<div class="fn-i">Hamstring: feel a dip = tear → protect and ice. Feel firmness but no dip = likely spasm → offload and keep moving.</div>
+<div class="fn-i">Acute hamstring: work ALL AROUND the site, not on it. Groin gliding + popliteus/calf work to offload both ends.</div>
+<div class="fn-i">Ice: <span class="num">10–20 min × 2 bags</span> immediately, then shift to blood flow. Don't keep icing.</div>
+<div class="fn-i">Hamstring spasm return: <span class="num">5–10 days</span> (true spasm) / <span class="num">~8 weeks</span> (spasm at top speed)</div>
+<div class="fn-i">Plantar fascia: fascial densification threshold = <span class="num">~3 min 40 sec</span> — must sustain treatment through this window</div>
+<div class="fn-i">Plantar fascia protocol: tibial nerve offload + metatarsal head mobilisation = <span class="num">~80%</span> response rate. Never treat the fascia directly first.</div>
+</div>
+
+<div class="pnotes"><span class="pnlab">📝 Your Additional Notes — Full View</span>
+<textarea id="pn-fullnotes" placeholder="Add extra notes, ideas, or follow-up questions here. These save locally in your browser." oninput="saveNote('fullnotes')"></textarea>
+<div class="psaved" id="sv-fullnotes">Saved ✓</div></div>
+</div><!-- /fullnotes -->
+
+<!-- ===ACTIONS=== -->
+<div class="tab-panel" id="tab-actions">
+<div class="section">
+<div class="sh"><span class="si">✅</span><span class="st">Action Items for NoCap</span></div>
+<div class="agrid">
+<div class="acard"><span class="alab">Immediate Clinical</span><ul class="bl">
+<li>Map ASIS hole → sartorius → pectineus → iliacus on next hip-restricted basketball player before loading</li>
+<li>Test pliability on loaded athletes: compress muscle, ask to move through it — log results</li>
+<li>Add adductor magnus separation technique into groin/hamstring rehab protocols</li>
+<li>Try ankle decision tree on any foot/ankle complaint before loading session</li>
+<li>Stop asking "where does it hurt?" in performance sessions — observe movement, then treat</li>
+<li>Enforce 1-week treatment washout before referring athletes for MRI</li>
+<li>Add subscap contraction test to shoulder assessment</li>
+<li>Treat lat (especially TL junction) before treating any shoulder complaint</li>
+</ul></div>
+<div class="acard"><span class="alab">Programming</span><ul class="bl">
+<li>Add isolated hip flexor activation (isometric holds pre-compound) for athletes where TFL is compensating</li>
+<li>Add adductor magnus loading (deep step-ups, RDL, full-depth split squat) as standard for basketball athletes</li>
+<li>For athletes with anterior hip pinch in deep squat: complete soft tissue sequence before loading to depth</li>
+<li>Add hip-driven plyometric work (glute-dominant hops, not calf-dominant) for stiffness deficit athletes</li>
+<li>Add isolated soleus loading (true calcaneal drive) before returning to full calf raises in any ankle rehab</li>
+<li>Peroneal weakness protocol: toe-curl eversion before standard banded eversion</li>
+</ul></div>
+<div class="acard"><span class="alab">Assessment</span><ul class="bl">
+<li>Add A-Walk as pre/post treatment proxy every session for lower limb athletes</li>
+<li>Add peroneal isolation test to ankle battery (eversion with and without toe curl)</li>
+<li>Add soleus isolation test (heel rise with and without manual calcaneal support)</li>
+<li>Track popliteus release as first-pass treatment for any medial knee or tibial rotation complaint</li>
+<li>Add glute hop test as stiffness screen: hands on glutes, hop, feel the kick</li>
+<li>Test subscap: compress → athlete contracts → can they push you off?</li>
+</ul></div>
+<div class="acard"><span class="alab">Content Angles</span><ul class="bl">
+<li>"The real triple extension truth" — busts top-speed sprinting myth</li>
+<li>"Why your hip flexor isn't tight — it's the layers above it"</li>
+<li>"The most undertreated muscle for basketball players" — adductor magnus</li>
+<li>"Why treating your athlete every day might be making them worse"</li>
+<li>"One treatment, one pass — the skill most physios never develop"</li>
+<li>"Fix the lat, fix most issues" — shoulder series starting point</li>
+<li>"Why I never ask my athletes what hurts"</li>
+<li>"Popliteus — the magic button no one talks about"</li>
+</ul></div>
+</div>
+<div class="sh" style="margin-top:22px"><span class="si">🔗</span><span class="st">Gaps, Conflicts &amp; Follow-Up</span></div>
+<div class="card flag"><div class="ct">Stability Screening Gap</div><ul class="bl">
+<li>Stability vs. mobility distinction raised throughout but never given a formal screening protocol</li>
+<li>Speaker identifies when NOT to treat but doesn't give a system for screening stability pre-treatment</li>
+<li>Worth developing a simple NoCap stability screen</li>
+</ul></div>
+<div class="card warn"><div class="ct">Dr. Patchnet — Follow Up</div><ul class="bl">
+<li>Referenced as the expert in detailed e-stim frequency protocols by tissue type</li>
+<li>Find his resources for tissue-specific settings beyond 1/2/10 Hz</li>
+</ul></div>
+<div class="card warn"><div class="ct">Italian Fascia Research</div><ul class="bl">
+<li>The <span class="num">3:40</span> densification threshold and hyaluronic acid mechanism referenced but not cited</li>
+<li>Find the original Italian research (likely Stecco lab) to verify</li>
+</ul></div>
+</div>
+</div><!-- /actions -->
+
+<!-- ===NOTION=== -->
+<div class="tab-panel" id="tab-notion">
+<div class="section">
+<div class="sh"><span class="si">📝</span><span class="st">Notion Summary Block</span></div>
+<div class="nblock">
+<div class="nrow"><span class="nkey">Page Title</span><span class="nval">Manual Hip, Foot, Ankle &amp; Shoulder Mobilisation + Performance Therapy System — Days 1 &amp; 2 — St&#233;phane Gregory</span></div>
+<div class="nrow"><span class="nkey">Source Type</span><span class="nval">Seminar</span></div>
+<div class="nrow"><span class="nkey">Status</span><span class="nval">In the Lab 🧪</span></div>
+<div class="nrow"><span class="nkey">Topic Tags</span><span class="nval"><div class="taglist"><span class="tag">Physio</span><span class="tag">S&amp;C</span><span class="tag">Biomechanics</span><span class="tag">Athletic Development</span><span class="tag">Coaching Philosophy</span><span class="tag">Educational</span><span class="tag">Return to Sport</span><span class="tag">Training Systems</span></div></span></div>
+<div class="nrow"><span class="nkey">One-line Summary</span><span class="nval">2-day performance therapy seminar covering layer-based manual treatment (hip, foot, ankle, shoulder), the Pick-Through method, table-side stability rehab, acute injury management, and the system for treating athletes in sport context.</span></div>
+<div class="nrow"><span class="nkey">Key Takeaways</span><span class="nval"><ul class="bl" style="margin-top:4px">
+<li>Goal is winning the sport, not return to sport — every treatment must directly improve sport capacity</li>
+<li>Shrink the feedback loop: treat at training site, retest movement immediately, refine each pass</li>
+<li>Treat aberrant tension (within range), not protective tension (end range) — tightness at end range = normal</li>
+<li>Fix the lat first for almost any shoulder complaint — long lever muscles dominate shoulder function</li>
+<li>The adductor magnus and popliteus are the two most undertreated magic spots for lower limb athletes</li>
+<li>One genuine failure = one training stimulus — <span class="num">10–14 days</span> between real stimuli</li>
+<li>Plantar fascia: treat tibial nerve + metatarsal heads, not the fascia directly — <span class="num">~80%</span> response rate</li>
+</ul></span></div>
+<div class="nrow"><span class="nkey">Clinical Relevance</span><span class="nval">Directly applicable to basketball athlete assessment and treatment: foot/ankle stiffness deficits, hip mobility restrictions, adductor/groin management, post-ACL VMO inhibition, acute hamstring management, shoulder function in overhead athletes. The Pick-Through method maps onto Harry's court-side coaching context.</span></div>
+<div class="nrow"><span class="nkey">Link</span><span class="nval">—</span></div>
+</div>
+<div class="card" style="margin-top:14px"><div class="ct">Ready to Push</div><ul class="bl">
+<li>Say <code>PUSH TO NOTION</code> in chat and this synthesis will be sent to the NCP Knowledge Bank</li>
+<li>Status will be set to "In the Lab 🧪"</li>
+</ul></div>
+</div>
+</div><!-- /notion -->
+
+</div></div>
+<script>
+function sw(id,btn){
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tbtn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  if(btn)btn.classList.add('active');
+  document.getElementById('sidebar').style.display=(id==='overview')?'':'none';
+  document.getElementById('SI').value='';
+  document.getElementById('SC').textContent='';
+  clearHL();
+}
+function nav(id,el){
+  const t=document.getElementById(id);
+  if(t)t.scrollIntoView({behavior:'smooth',block:'start'});
+  document.querySelectorAll('.slink').forEach(l=>l.classList.remove('active'));
+  if(el)el.classList.add('active');
+}
+function doSearch(){
+  const q=document.getElementById('SI').value.toLowerCase().trim();
+  clearHL();
+  document.getElementById('fn-no').style.display='none';
+  if(!q){document.getElementById('SC').textContent='';return;}
+  const active=document.querySelector('.tab-panel.active');
+  if(!active)return;
+  const count=walkHL(active,q);
+  document.getElementById('SC').textContent=count>0?count+' match'+(count>1?'es':''):'0 matches';
+  if(active.id==='tab-fullnotes'){
+    const secs=active.querySelectorAll('.fn-s');
+    let any=false;
+    secs.forEach(s=>{const h=s.querySelector('mark');s.classList.toggle('hbs',!h);if(h)any=true;});
+    if(!any)document.getElementById('fn-no').style.display='block';
+  }
+}
+function walkHL(node,q){
+  let c=0;
+  if(node.nodeType===3){
+    const txt=node.textContent,lower=txt.toLowerCase();
+    let idx=lower.indexOf(q);if(idx<0)return 0;
+    const frag=document.createDocumentFragment();let last=0;
+    while(idx>=0){
+      frag.appendChild(document.createTextNode(txt.slice(last,idx)));
+      const mk=document.createElement('mark');mk.textContent=txt.slice(idx,idx+q.length);
+      frag.appendChild(mk);c++;last=idx+q.length;idx=lower.indexOf(q,last);
+    }
+    frag.appendChild(document.createTextNode(txt.slice(last)));
+    node.parentNode.replaceChild(frag,node);return c;
+  }
+  if(node.nodeType===1&&!['SCRIPT','STYLE','INPUT','TEXTAREA'].includes(node.tagName))
+    Array.from(node.childNodes).forEach(ch=>{c+=walkHL(ch,q);});
+  return c;
+}
+function clearHL(){
+  document.querySelectorAll('mark').forEach(m=>{m.parentNode.replaceChild(document.createTextNode(m.textContent),m);m.parentNode.normalize();});
+  document.querySelectorAll('.hbs').forEach(el=>el.classList.remove('hbs'));
+}
+function saveNote(k){
+  const ta=document.getElementById('pn-'+k),sv=document.getElementById('sv-'+k);
+  if(!ta)return;
+  try{localStorage.setItem('ncp-g-'+k,ta.value);}catch(e){}
+  if(sv){sv.style.opacity='1';setTimeout(()=>sv.style.opacity='0',1500);}
+}
+function loadNotes(){
+  ['overview','system','foot','hip','shoulder','other','fullnotes'].forEach(k=>{
+    const ta=document.getElementById('pn-'+k);
+    if(!ta)return;
+    try{const v=localStorage.getItem('ncp-g-'+k);if(v)ta.value=v;}catch(e){}
+  });
+}
+window.addEventListener('scroll',()=>{
+  const ids=['thesis','keycon','nuance','cues'];let cur='';
+  ids.forEach(id=>{const el=document.getElementById(id);if(el&&window.scrollY>=el.offsetTop-200)cur=id;});
+  document.querySelectorAll('.slink').forEach(l=>{
+    const m=l.getAttribute('onclick')&&l.getAttribute('onclick').includes("'"+cur+"'");
+    l.classList.toggle('active',m);
+  });
+},{passive:true});
+loadNotes();
+</script>
+</body></html>
