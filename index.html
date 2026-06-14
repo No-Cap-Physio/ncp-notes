@@ -1,13 +1,70 @@
-<h1>NCP Notes</h1>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NoCap Notes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#0F1B2D;--np:#162542;--nl:#2A3F5F;--nk:#F5F1E8;--nd:#A8B4C4;--nm:#6C7A8F;--tan:#D4A574;--td:rgba(212,165,116,0.12);--tb:rgba(212,165,116,0.28);--f:'Inter',system-ui,sans-serif}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--navy);color:var(--nk);font-family:var(--f);font-size:14px;line-height:1.7;min-height:100vh;padding:48px 32px}
+.brand{font-size:10px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--tan);margin-bottom:8px}
+h1{font-size:22px;font-weight:800;color:var(--nk);margin-bottom:4px}
+.sub{font-size:13px;color:var(--nm);margin-bottom:40px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px;max-width:900px}
+.note-card{background:var(--np);border:1px solid var(--nl);border-radius:6px;padding:16px 18px;text-decoration:none;display:block;transition:border-color .15s,background .15s}
+.note-card:hover{border-color:var(--tb);background:var(--td)}
+.note-type{font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--nm);margin-bottom:5px}
+.note-title{font-size:14px;font-weight:700;color:var(--nk);margin-bottom:3px;line-height:1.4}
+.note-sub{font-size:12px;color:var(--nd);margin-bottom:10px}
+.note-tags{display:flex;flex-wrap:wrap;gap:5px}
+.tag{font-size:10px;font-weight:600;letter-spacing:.05em;color:var(--tan);background:var(--td);border:1px solid var(--tb);border-radius:3px;padding:1px 6px}
+.note-date{font-size:10px;color:var(--nm);margin-top:8px}
+.empty{color:var(--nm);font-size:13px;max-width:400px;line-height:1.7;padding:20px 0}
+@media(max-width:600px){body{padding:28px 18px}}
+</style>
+</head>
+<body>
 
-<h2>Workshops</h2>
-<ul>
-  <li><a href="workshops/stephane-gregory.html">Stephane Gregory</a></li>
-  <li><a href="workshops/david-grey.html">David Grey</a></li>
-</ul>
+<div class="brand">NoCap Physio</div>
+<h1>Synthesis Notes</h1>
+<div class="sub">Practitioner-grade notes from seminars, podcasts, courses &amp; research.</div>
 
-<h2>Rehab</h2>
-<ul>
-  <li><a href="rehab/acl.html">ACL Rehab</a></li>
-  <li><a href="rehab/meniscus.html">Meniscus Rehab</a></li>
-</ul>
+<div class="grid">
+
+  <!-- ══════════════════════════════════════
+       ADD A NEW CARD FOR EACH SYNTHESIS NOTE
+       Duplicate this block and update the fields
+  ══════════════════════════════════════ -->
+
+  <a class="note-card" href="gregory-manual-therapy-ncp.html">
+    <div class="note-type">Seminar · 2 Days</div>
+    <div class="note-title">Manual Performance Therapy — Stéphane Gregory</div>
+    <div class="note-sub">Hip, Foot, Ankle &amp; Shoulder Mobilisation · Days 1 &amp; 2</div>
+    <div class="note-tags">
+      <span class="tag">Physio</span>
+      <span class="tag">Biomechanics</span>
+      <span class="tag">Athletic Development</span>
+    </div>
+    <div class="note-date">Synthesized Jun 14 2026</div>
+  </a>
+
+  <!-- TEMPLATE CARD — copy, uncomment, and fill in for each new note
+  <a class="note-card" href="[filename]-ncp.html">
+    <div class="note-type">[Type — Seminar / Podcast / Course / Research]</div>
+    <div class="note-title">[Title — Speaker Name]</div>
+    <div class="note-sub">[Short descriptor — topic covered]</div>
+    <div class="note-tags">
+      <span class="tag">[Tag]</span>
+      <span class="tag">[Tag]</span>
+    </div>
+    <div class="note-date">Synthesized [Date]</div>
+  </a>
+  -->
+
+</div>
+
+</body>
+</html>
