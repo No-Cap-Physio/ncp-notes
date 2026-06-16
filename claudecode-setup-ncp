@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Claude Code Setup — NCP</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#0F1B2D;--np:#162542;--np2:#1E2F4D;--nl:#2A3F5F;
+  --nk:#F5F1E8;--nd:#A8B4C4;--nm:#6C7A8F;
+  --tan:#D4A574;--td:rgba(212,165,116,0.12);--tb:rgba(212,165,116,0.28);
+  --bad:#EF476F;--warn:#FFB703;--wt:#C58A00;--good:#06D6A0;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--navy);color:var(--nk);font-family:'Inter',sans-serif;font-size:14px;line-height:1.8}
+/* HEADER */
+.hdr{background:var(--np);border-bottom:1px solid var(--nl);padding:16px 24px;position:sticky;top:0;z-index:100;display:flex;align-items:center;gap:16px}
+.hdr-logo{font-size:11px;font-weight:800;letter-spacing:2px;color:var(--tan);text-transform:uppercase}
+.hdr-title{font-size:15px;font-weight:700;color:var(--nk)}
+.hdr-tag{font-size:11px;color:var(--nm);margin-left:auto;background:var(--td);border:1px solid var(--tb);border-radius:4px;padding:2px 8px}
+/* TABS */
+.tabs{background:var(--np);border-bottom:1px solid var(--nl);padding:0 16px;display:flex;gap:4px;overflow-x:auto;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tbtn{background:none;border:none;color:var(--nm);font-family:'Inter',sans-serif;font-size:12px;font-weight:600;padding:10px 14px;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:all .2s}
+.tbtn:hover{color:var(--nk)}
+.tbtn.active{color:var(--tan);border-bottom-color:var(--tan)}
+/* CONTENT */
+.content{max-width:900px;margin:0 auto;padding:24px 16px}
+.tab-panel{display:none}
+.tab-panel.active{display:block}
+/* SECTION */
+.section{margin-bottom:28px}
+.sh{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.si{font-size:16px}
+.st{font-size:11px;font-weight:800;letter-spacing:2px;color:var(--tan);text-transform:uppercase}
+/* CARDS */
+.card{background:var(--np);border:1px solid var(--nl);border-radius:8px;padding:16px;margin-bottom:12px}
+.card.hi{border-color:var(--tb);background:var(--td)}
+.card.warn{border-color:rgba(239,71,111,0.4);background:rgba(239,71,111,0.06)}
+.card.flag{border-color:rgba(255,183,3,0.4);background:rgba(255,183,3,0.06)}
+.card.good{border-color:rgba(6,214,160,0.4);background:rgba(6,214,160,0.06)}
+.ct{font-size:11px;font-weight:700;letter-spacing:1px;color:var(--tan);text-transform:uppercase;margin-bottom:8px}
+/* BULLET LIST */
+ul.bl{list-style:none;padding:0}
+ul.bl li{padding:3px 0 3px 16px;position:relative;color:var(--nd);font-size:13px}
+ul.bl li::before{content:"›";position:absolute;left:0;color:var(--tan);font-weight:700}
+ul.bl li strong{color:var(--nk);font-weight:600}
+ul.bl li em{color:var(--nm);font-style:italic}
+.num{color:var(--tan);font-weight:700;text-shadow:0 0 8px rgba(212,165,116,0.4)}
+/* PROTOCOL */
+.proto{background:var(--np2);border-left:3px solid var(--tan);border-radius:0 6px 6px 0;padding:14px 16px;margin-bottom:12px}
+.proto.wp{border-left-color:var(--warn)}
+.pn{font-size:10px;font-weight:800;letter-spacing:1.5px;color:var(--tan);text-transform:uppercase;margin-bottom:8px}
+.proto.wp .pn{color:var(--wt)}
+/* DATA TABLE */
+.dtable{width:100%;border-collapse:collapse;font-size:13px}
+.dtable th{background:var(--np2);color:var(--nm);font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:8px 12px;text-align:left;border-bottom:1px solid var(--nl)}
+.dtable td{padding:8px 12px;border-bottom:1px solid var(--nl);color:var(--nd);vertical-align:top}
+.dtable td.val{color:var(--tan);font-weight:700;text-shadow:0 0 8px rgba(212,165,116,0.4)}
+/* PRIORITY */
+.pri{display:flex;align-items:flex-start;gap:10px;padding:10px 14px;border-radius:6px;margin-bottom:8px;border:1px solid var(--nl)}
+.pri.high{border-color:var(--tb);background:var(--td)}
+.pri.mod{background:var(--np)}
+.pri.low{background:var(--np);opacity:.7}
+.plab{font-size:9px;font-weight:800;letter-spacing:1px;color:var(--tan);text-transform:uppercase;min-width:70px;padding-top:2px}
+.pb{font-size:13px;color:var(--nd)}
+.pb strong{color:var(--nk)}
+/* ACTION GRID */
+.agrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+.acard{background:var(--np);border:1px solid var(--nl);border-radius:8px;padding:14px}
+.alab{font-size:9px;font-weight:800;letter-spacing:1.5px;color:var(--tan);text-transform:uppercase;display:block;margin-bottom:8px}
+/* FULL NOTES */
+.fn-search{display:flex;gap:8px;margin-bottom:16px;align-items:center}
+.fn-search input{flex:1;background:var(--np);border:1px solid var(--nl);border-radius:6px;padding:8px 12px;color:var(--nk);font-family:'Inter',sans-serif;font-size:13px;outline:none}
+.fn-search input:focus{border-color:var(--tan)}
+.fn-count{font-size:11px;color:var(--nm);white-space:nowrap}
+.fn-s{margin-bottom:20px;transition:opacity .2s}
+.fn-s.hidden{opacity:.15}
+.fn-day{font-size:10px;font-weight:800;letter-spacing:1.5px;color:var(--tan);text-transform:uppercase;margin-bottom:6px}
+.fn-head{font-size:12px;font-weight:700;color:var(--nk);margin-bottom:4px;margin-top:10px}
+.fn-i{font-size:13px;color:var(--nd);padding:2px 0 2px 14px;position:relative}
+.fn-i::before{content:"›";position:absolute;left:0;color:var(--tan)}
+.fn-i mark{background:rgba(212,165,116,0.3);color:var(--nk);border-radius:2px;padding:0 2px}
+/* NOTION PUSH */
+.nblock{background:var(--np);border:1px solid var(--nl);border-radius:8px;overflow:hidden}
+.nrow{display:flex;border-bottom:1px solid var(--nl);align-items:flex-start}
+.nrow:last-child{border-bottom:none}
+.nkey{font-size:10px;font-weight:700;letter-spacing:1px;color:var(--nm);text-transform:uppercase;padding:10px 14px;min-width:140px;border-right:1px solid var(--nl);background:var(--np2)}
+.nval{font-size:13px;color:var(--nd);padding:10px 14px;flex:1}
+.taglist{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
+.tag{background:var(--td);border:1px solid var(--tb);border-radius:4px;padding:2px 8px;font-size:11px;color:var(--tan);font-weight:600}
+/* CUE */
+.cue{background:var(--np2);border-left:3px solid var(--tan);border-radius:0 6px 6px 0;padding:12px 16px;font-style:italic;color:var(--nd);font-size:13px;margin-bottom:12px}
+/* PERSONAL NOTES */
+.pnotes{margin-top:28px;background:var(--np);border:1px solid var(--nl);border-radius:8px;padding:14px}
+.pnlab{font-size:10px;font-weight:700;letter-spacing:1px;color:var(--nm);text-transform:uppercase;display:block;margin-bottom:8px}
+.pnotes textarea{width:100%;background:var(--np2);border:1px solid var(--nl);border-radius:6px;color:var(--nk);font-family:'Inter',sans-serif;font-size:13px;padding:10px 12px;resize:vertical;min-height:80px;outline:none}
+.pnotes textarea:focus{border-color:var(--tan)}
+.psaved{font-size:11px;color:var(--good);margin-top:4px;opacity:0;transition:opacity .3s}
+/* GRID UTILS */
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:600px){.grid2{grid-template-columns:1fr}.agrid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="hdr-logo">NCP</div>
+  <div class="hdr-title">Claude Code Setup — NCP System</div>
+  <div class="hdr-tag">June 2026</div>
+</div>
+
+<div class="tabs">
+  <button class="tbtn active" onclick="sw('overview',this)">Overview</button>
+  <button class="tbtn" onclick="sw('whatitis',this)">What Claude Code Is</button>
+  <button class="tbtn" onclick="sw('ncpmap',this)">NCP Use Cases</button>
+  <button class="tbtn" onclick="sw('setup',this)">Setup Protocol</button>
+  <button class="tbtn" onclick="sw('claudemd',this)">CLAUDE.md</button>
+  <button class="tbtn" onclick="sw('rules',this)">Session Rules</button>
+  <button class="tbtn" onclick="sw('alldata',this)">All Data</button>
+  <button class="tbtn" onclick="sw('fullnotes',this)">🔍 Full Notes</button>
+  <button class="tbtn" onclick="sw('actions',this)">Action Items</button>
+  <button class="tbtn" onclick="sw('notionpush',this)">Notion Push</button>
+</div>
+
+<div class="content">
+
+<!-- ===== OVERVIEW ===== -->
+<div class="tab-panel active" id="tab-overview">
+  <div class="section">
+    <div class="sh"><span class="si">🧠</span><span class="st">Core Thesis</span></div>
+    <div class="card hi">
+      <div class="ct">What This Is</div>
+      <ul class="bl">
+        <li><strong>Claude Code</strong> is a coding agent that runs in your terminal or desktop app — you describe what you want built, it writes code, runs it, fixes errors, and ships it</li>
+        <li><strong>No coding knowledge required</strong> — but you need to know exactly what you want before you ask</li>
+        <li><strong>Think of it as a developer</strong> who works instantly and free, but needs clear briefs every time</li>
+        <li><strong>The CLAUDE.md file</strong> is the single biggest leverage point — build it once, every session reads it automatically</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="sh"><span class="si">🎯</span><span class="st">NCP Priority Order</span></div>
+    <div class="pri high"><div class="plab">Priority 1</div><div class="pb"><strong>Ankle Program page</strong> — next product, build first</div></div>
+    <div class="pri high"><div class="plab">Priority 2</div><div class="pb"><strong>CLAUDE.md</strong> — permanent session briefing (already built June 2026)</div></div>
+    <div class="pri mod"><div class="plab">Priority 3</div><div class="pb"><strong>Instagram audit setup</strong> — Windsor.ai or Claude in Chrome</div></div>
+    <div class="pri mod"><div class="plab">Priority 4</div><div class="pb"><strong>Content pipeline tool</strong> — trending topics + competitor dashboard</div></div>
+    <div class="pri low"><div class="plab">Ongoing</div><div class="pb"><strong>Clinical report generators</strong> — 1-to-1, combine, NCP combine</div></div>
+  </div>
+
+  <div class="section">
+    <div class="sh"><span class="si">⚡</span><span class="st">Key Principles</span></div>
+    <ul class="bl">
+      <li><strong>Context degrades over time</strong> — the longer the session, the worse Claude performs; keep sessions short and focused</li>
+      <li><strong>One task per session</strong> — don't chain multiple builds; finish one, start fresh</li>
+      <li><strong>Plan before code</strong> — use plan mode for anything touching multiple files; explore first, plan second, build third</li>
+      <li><strong>Verify everything</strong> — ask Claude to run checks on its own output; never ship without a verification step</li>
+      <li><strong>HANDOFF.md</strong> — before ending any long session, write what was tried, what worked, what didn't, what's next</li>
+    </ul>
+  </div>
+
+  <div class="pnotes">
+    <span class="pnlab">📝 Your Notes — Overview</span>
+    <textarea id="pn-overview" placeholder="Add your own notes here…" oninput="saveNote('overview')"></textarea>
+    <div class="psaved" id="sv-overview">Saved ✓</div>
+  </div>
+</div>
+
+<!-- ===== WHAT CLAUDE CODE IS ===== -->
+<div class="tab-panel" id="tab-whatitis">
+  <div class="section">
+    <div class="sh"><span class="si">🤖</span><span class="st">How It Works</span></div>
+    <div class="card">
+      <div class="ct">The Agentic Loop</div>
+      <ul class="bl">
+        <li><strong>Gather context</strong> — reads your files, understands your codebase</li>
+        <li><strong>Take action</strong> — writes code, runs commands, edits files</li>
+        <li><strong>Verify results</strong> — runs tests, checks output, fixes errors</li>
+        <li><strong>Repeats</strong> — cycles until task is done or you redirect it</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="ct">Built-in Tools</div>
+      <ul class="bl">
+        <li><strong>File operations</strong> — read, edit, create, rename files</li>
+        <li><strong>Search</strong> — find files by pattern, search content, explore codebases</li>
+        <li><strong>Execution</strong> — run shell commands, start servers, run tests, use git</li>
+        <li><strong>Web</strong> — search the web, fetch documentation, look up errors</li>
+        <li><strong>Browser</strong> — Claude in Chrome for visual audits and form interactions</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="sh"><span class="si">📍</span><span class="st">Access Points</span></div>
+    <ul class="bl">
+      <li><strong>Claude Desktop app</strong> — primary interface (Harry has this installed)</li>
+      <li><strong>Claude in Chrome</strong> — browser extension for Instagram/competitor audits (Harry has this)</li>
+      <li><strong>Terminal</strong> — type <code>claude</code> in any project folder to start</li>
+      <li><strong>VS Code / JetBrains</strong> — IDE integrations available if needed later</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <div class="sh"><span class="si">⚠️</span><span class="st">Key Constraint</span></div>
+    <div class="card warn">
+      <div class="ct">Context Window Fills Fast</div>
+      <ul class="bl">
+        <li><strong>Performance degrades</strong> as context fills — at <span class="num">256K tokens</span> efficiency is ~<span class="num">91%</span>, at <span class="num">1M tokens</span> it drops to <span class="num">65–78%</span></li>
+        <li><strong>Clear at 20–25%</strong> of context window — don't wait until it's full</li>
+        <li><strong>/clear</strong> resets context completely; <strong>/compact</strong> summarises and compresses</li>
+        <li><strong>Fresh sessions outperform long ones</strong> — start new conversations for new tasks</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="pnotes">
+    <span class="pnlab">📝 Your Notes — What Claude Code Is</span>
+    <textarea id="pn-whatitis" placeholder="Add your own notes here…" oninput="saveNote('whatitis')"></textarea>
+    <div class="psaved" id="sv-whatitis">Saved ✓</div>
+  </div>
+</div>
+
+<!-- ===== NCP USE CASES ===== -->
+<div class="tab-panel" id="tab-ncpmap">
+  <div class="section">
+    <div class="sh"><span class="si">✅</span><span class="st">What Claude Code Can Build for NCP</span></div>
+    <div class="card good">
+      <div class="ct">Direct Builds</div>
+      <ul class="bl">
+        <li><strong>Product pages</strong> — Ankle Program, Defence Program, Knee ebook landing pages</li>
+        <li><strong>ManyChat automation flows</strong> — webhook integrations, keyword flow logic</li>
+        <li><strong>Content dashboard</strong> — track posts, competitor content, trending topics</li>
+        <li><strong>Clinical report generators</strong> — 1-to-1 assessments, combine reports, group NCP combine reports</li>
+        <li><strong>Quiz pages</strong> — already live on GitHub Pages, can extend or rebuild</li>
+        <li><strong>One-off digital products</strong> — calculators, tools, interactive assets</li>
+        <li><strong>Automation scripts</strong> — clinical note processing, report generation pipelines</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="ct">Needs Connectors</div>
+      <ul class="bl">
+        <li><strong>Instagram analysis</strong> — Windsor.ai MCP for deep data, Claude in Chrome for quick audits</li>
+        <li><strong>Competitor tracking</strong> — Claude in Chrome browses public profiles directly</li>
+        <li><strong>Trending content research</strong> — web search built in, no extra setup</li>
+        <li><strong>Notion integration</strong> — Notion MCP already in Claude ecosystem</li>
+      </ul>
+    </div>
+    <div class="card warn">
+      <div class="ct">Not Claude Code's Job</div>
+      <ul class="bl">
+        <li><strong>Auto-replying to DMs</strong> — that's ManyChat (DM setter is locked until manual process proven)</li>
+        <li><strong>Scheduling posts</strong> — separate scheduling tool needed</li>
+        <li><strong>Running agent schedules</strong> — that's Cowork inside Claude Projects, not Claude Code</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="sh"><span class="si">📊</span><span class="st">Instagram Analysis Options</span></div>
+    <div class="grid2">
+      <div class="card hi">
+        <div class="ct">Windsor.ai MCP — Deep Analysis</div>
+        <ul class="bl">
+          <li><strong>Data:</strong> watch time, story exits, demographics, saves, follower trends</li>
+          <li><strong>Setup:</strong> ~<span class="num">5 minutes</span>, free tier available</li>
+          <li><strong>Best for:</strong> recurring deep-dive analysis</li>
+          <li><strong>History:</strong> up to <span class="num">30 days</span> on free plan</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="ct">Claude in Chrome — Quick Audit</div>
+        <ul class="bl">
+          <li><strong>Data:</strong> visible likes, comments, reach shown in UI</li>
+          <li><strong>Setup:</strong> ~<span class="num">3 minutes</span>, no extra account needed</li>
+          <li><strong>Best for:</strong> fast qualitative checks, competitor browsing</li>
+          <li><strong>Limit:</strong> only what's currently on screen</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="sh"><span class="si">🏀</span><span class="st">Clinical Tools Context</span></div>
+    <div class="card">
+      <div class="ct">Three Report Types Already in General Projects</div>
+      <ul class="bl">
+        <li><strong>1-to-1 athlete assessment</strong> — individual physio/performance report for a single athlete</li>
+        <li><strong>Combine athlete report</strong> — single athlete's combine testing data formatted as a report</li>
+        <li><strong>NCP Combine report</strong> — batch report for a group of athletes at a combine</li>
+      </ul>
+    </div>
+    <div class="card hi">
+      <div class="ct">Clinical Benchmarks (locked into CLAUDE.md)</div>
+      <ul class="bl">
+        <li><strong>Knee extension:</strong> ><span class="num">7.5 N/kg</span> — absolute threshold, not LSI ratio</li>
+        <li><strong>Knee flexion:</strong> ><span class="num">2.8 N/kg</span></li>
+        <li><strong>Plantar flexion:</strong> ><span class="num">18 N/kg</span></li>
+        <li><strong>ACL-RSI score</strong> — psychological readiness measurement</li>
+        <li><strong>Hop distance warning:</strong> identical scores can reflect different movement strategies (hip-dominant vs knee-dominant) — ratio alone doesn't reveal the strategy</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="pnotes">
+    <span class="pnlab">📝 Your Notes — NCP Use Cases</span>
+    <textarea id="pn-ncpmap" placeholder="Add your own notes here…" oninput="saveNote('ncpmap')"></textarea>
+    <div class="psaved" id="sv-ncpmap">Saved ✓</div>
+  </div>
+</div>
+
+<!-- ===== SETUP PROTOCOL ===== -->
+<div class="tab-panel" id="tab-setup">
+  <div class="section">
+    <div class="sh"><span class="si">🛠</span><span class="st">Week-by-Week Setup</span></div>
+
+    <div class="proto">
+      <div class="pn">WEEK 1 — GET ORIENTED</div>
+      <ul class="bl">
+        <li><strong>Step 1:</strong> Open Claude Code desktop app</li>
+        <li><strong>Step 2:</strong> Place <code>CLAUDE.md</code> at <code>~/.claude/CLAUDE.md</code> (the file built June 2026)</li>
+        <li><strong>Step 3:</strong> Open a terminal in any project folder and run <code>claude</code> to start a session</li>
+        <li><strong>Step 4:</strong> Pick ONE small build — Ankle Program product page is the recommended first task</li>
+        <li><strong>Pass:</strong> Claude reads your CLAUDE.md automatically, knows your brand, asks no context questions</li>
+      </ul>
+    </div>
+
+    <div class="proto">
+      <div class="pn">WEEK 2 — FIRST REAL BUILD</div>
+      <ul class="bl">
+        <li><strong>Task:</strong> Build the Ankle Program landing page</li>
+        <li><strong>Brief format:</strong> Write <span class="num">3–5</span> sentences describing exactly what you want before opening Claude Code</li>
+        <li><strong>Use plan mode:</strong> Shift+Tab to enter plan mode — Claude plans before it builds</li>
+        <li><strong>Verify:</strong> Ask Claude to screenshot the result and check it against the brief</li>
+        <li><strong>Git:</strong> Ask Claude to commit with a descriptive message after each working build</li>
+      </ul>
+    </div>
+
+    <div class="proto">
+      <div class="pn">WEEK 3 — INSTAGRAM AUDIT</div>
+      <ul class="bl">
+        <li><strong>Option A (quick):</strong> Claude in Chrome already installed — log into Instagram in Chrome, enable Claude in Chrome in a new chat, run audit prompts</li>
+        <li><strong>Option B (deep):</strong> Set up Windsor.ai at onboard.windsor.ai, connect Instagram, add Windsor connector to Claude, run full API audit</li>
+        <li><strong>Recommended start:</strong> Chrome first, Windsor second</li>
+      </ul>
+    </div>
+
+    <div class="proto">
+      <div class="pn">WEEK 4+ — CONTENT PIPELINE TOOL</div>
+      <ul class="bl">
+        <li><strong>Build:</strong> Dashboard pulling trending topics, competitor activity, outputs NCP Idea Briefs</li>
+        <li><strong>Integration:</strong> Connects to Notion Content Flow database (ID: <span class="num">1170f8bb-702f-8156-9912-d1737d19b608</span>)</li>
+        <li><strong>Output format:</strong> Idea Brief cards → push to Notion → Harry flips to Research → Agent B scripts</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="sh"><span class="si">📋</span><span class="st">Essential Commands</span></div>
+    <div class="card">
+      <div class="ct">Commands to Know</div>
+      <ul class="bl">
+        <li><strong>/init</strong> — scan a project folder and generate a CLAUDE.md for it automatically</li>
+        <li><strong>/clear</strong> — reset context window between unrelated tasks</li>
+        <li><strong>/compact</strong> — summarise conversation to free space while preserving key decisions</li>
+        <li><strong>/compact [focus]</strong> — e.g. <code>/compact focus on the API changes</code></li>
+        <li><strong>/status line</strong> — set up a status bar showing model, directory, context % used</li>
+        <li><strong>Shift+Tab</strong> — cycle between modes (default → plan mode → auto)</li>
+        <li><strong>Esc</strong> — stop Claude mid-action, context preserved, can redirect</li>
+        <li><strong>Esc+Esc or /rewind</strong> — roll back to a previous conversation checkpoint</li>
+        <li><strong>ultra think</strong> — type this in your prompt for complex architecture decisions (uses ~<span class="num">32K</span> extra tokens)</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="ct">HANDOFF.md Pattern</div>
+      <ul class="bl">
+        <li><strong>When to write:</strong> before ending any long or incomplete session</li>
+        <li><strong>What to include:</strong> what was tried, what worked, what didn't, what's next</li>
+        <li><strong>How to use:</strong> start fresh session, load HANDOFF.md path only — nothing else</li>
+        <li><strong>Why:</strong> preserves progress without polluting the new session's context</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="pnotes">
+    <span class="pnlab">📝 Your Notes — Setup Protocol</span>
+    <textarea id="pn-setup" placeholder="Add your own notes here…" oninput="saveNote('setup')"></textarea>
+    <div class="psaved" id="sv-setup">Saved ✓</div>
+  </div>
+</div>
+
+<!-- ===== CLAUDE.MD ===== -->
+<div class="tab-panel" id="tab-claudemd">
+  <div class="section">
+    <div class="sh"><span class="si">📄</span><span class="st">What's in Harry's CLAUDE.md</span></div>
+    <div class="card hi">
+      <div class="ct">What It Does</div>
+      <ul class="bl">
+        <li><strong>Reads automatically</strong> at the start of every Claude Code session — no manual loading</li>
+        <li><strong>Eliminates re-explaining</strong> — Claude already knows NCP brand, stack, products, voice, rules</li>
+        <li><strong>Location:</strong> <code>~/.claude/CLAUDE.md</code> (global — applies to all projects)</li>
+        <li><strong>Project-level files:</strong> can also place a <code>CLAUDE.md</code> inside any specific project folder for project-specific rules</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="sh"><span class="si">📦</span><span class="st">Sections in Harry's CLAUDE.md</span></div>
+    <ul class="bl">
+      <li><strong>WHO I AM</strong> — Harry's identity, NCP tagline, Instagram handle, Gains Chamber</li>
+      <li><strong>WHAT I BUILD</strong> — <span class="num">5</span> work categories: Content tools, Clinical tools, Product pages, Automation, Analysis</li>
+      <li><strong>BRAND</strong> — full colour tokens, retired colours, fonts, layout signature, emoji routing</li>
+      <li><strong>VOICE + WRITING RULES</strong> — banned words, YES/NO examples, content style</li>
+      <li><strong>TECH STACK</strong> — every tool and its purpose</li>
+      <li><strong>NOTION DATABASES</strong> — both database IDs, status flow, human gate rule</li>
+      <li><strong>AGENT SYSTEM</strong> — Agent A + B schedules, rules, output formats</li>
+      <li><strong>MANYCHAT KEYWORDS</strong> — all live keywords and flows</li>
+      <li><strong>PRODUCTS</strong> — full ladder in priority order, quiz URL</li>
+      <li><strong>CLINICAL TOOLS</strong> — <span class="num">3</span> report types, benchmarks, ACL-RSI, hop test caveat</li>
+      <li><strong>INSTAGRAM ANALYSIS</strong> — Windsor vs Chrome comparison, what to track, Idea Brief output format</li>
+      <li><strong>SESSION RULES</strong> — <span class="num">7</span> hard rules including DM setter lock</li>
+      <li><strong>WHAT HARRY DOES NOT WANT</strong> — explicit list to prevent wasted sessions</li>
+      <li><strong>SESSION START CHECKLIST</strong> — <span class="num">5</span> steps every new session should follow</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <div class="sh"><span class="si">🔒</span><span class="st">Non-Negotiable Rules in CLAUDE.md</span></div>
+    <div class="card warn">
+      <div class="ct">DM Setter Lock</div>
+      <ul class="bl">
+        <li>Do <strong>not</strong> build, suggest, or wire any automated DM reply system until Harry explicitly confirms the manual close process is proven and has run for <span class="num">2</span> weeks</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="ct">Human Gate</div>
+      <ul class="bl">
+        <li>Harry manually flips Notion cards from <strong>Ideas → Research</strong></li>
+        <li>This step is <strong>intentional and must never be automated</strong></li>
+        <li>Agent B only scripts cards already in "Research" status</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="pnotes">
+    <span class="pnlab">📝 Your Notes — CLAUDE.md</span>
+    <textarea id="pn-claudemd" placeholder="Add your own notes here…" oninput="saveNote('claudemd')"></textarea>
+    <div class="psaved" id="sv-claudemd">Saved ✓</div>
+  </div>
+</div>
+
+<!-- ===== SESSION RULES ===== -->
+<div class="tab-panel" id="tab-rules">
+  <div class="section">
+    <div class="sh"><span class="si">📏</span><span class="st">Rules That Make Claude Code Work</span></div>
+    <div class="card hi">
+      <div class="ct">The Three Things That Determine Success</div>
+      <ul class="bl">
+        <li><strong>Clear briefs</strong> — write <span class="num">3–5</span> sentences describing exactly what you want before opening Claude Code; vague in = vague out</li>
+        <li><strong>One task per session</strong> — don't chain multiple builds; finish one output, clear context, start fresh</li>
+        <li><strong>CLAUDE.md file</strong> — the single highest-leverage action; built once, benefits every session forever</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="sh"><span class="si">🔄</span><span class="st">Session Flow</span></div>
+    <div class="proto">
+      <div class="pn">STANDARD SESSION PATTERN</div>
+      <ul class="bl">
+        <li><strong>Open:</strong> Claude Code desktop → Claude reads CLAUDE.md automatically</li>
+        <li><strong>Enter plan mode:</strong> Shift+Tab → describe what you want → Claude plans before touching any files</li>
+        <li><strong>Review the plan:</strong> don't blindly accept; edit it if needed</li>
+        <li><strong>Execute:</strong> exit plan mode → Claude builds → runs checks → shows evidence</li>
+        <li><strong>Verify:</strong> ask Claude to screenshot, run tests, or show output before you accept</li>
+        <li><strong>Commit:</strong> ask Claude to commit to git with a descriptive message</li>
+        <li><strong>End session:</strong> if incomplete, write HANDOFF.md; if complete, /clear</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="sh"><span class="si">🚫</span><span class="st">Common Failure Patterns to Avoid</span></div>
+    <ul class="bl">
+      <li><strong>Kitchen sink session</strong> — starting with one task, drifting to unrelated asks; fix: /clear between tasks</li>
+      <li><strong>Correcting twice</strong> — if Claude is wrong twice in a row, don't correct again; /clear and write a better prompt</li>
+      <li><strong>Bloated CLAUDE.md</strong> — too long means Claude ignores half of it; prune ruthlessly, every line must earn its place</li>
+      <li><strong>No verification</strong> — never accept output without running a check; always ask Claude to prove it works</li>
+      <li><strong>Infinite exploration</strong> — asking Claude to "investigate" without scope; use subagents for research so main context stays clean</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <div class="sh"><span class="si">💡</span><span class="st">Power Moves</span></div>
+    <ul class="bl">
+      <li><strong>Subagents for research</strong> — "use a subagent to investigate X" — runs in separate context, reports back summary, keeps your session clean</li>
+      <li><strong>Status line setup</strong> — /status line → shows model + directory + context % in real time at bottom of terminal</li>
+      <li><strong>Ultra think</strong> — type <code>ultra think</code> in prompt for hard architecture decisions; allocates max <span class="num">32K</span> token thinking budget</li>
+      <li><strong>Rewind</strong> — Esc+Esc to roll back to any checkpoint; restores conversation only, code only, or both</li>
+      <li><strong>Alias shortcut</strong> — add <code>alias c='claude'</code> to <code>~/.zshrc</code>; then <code>c</code> starts Claude Code, <code>c -c</code> continues last session</li>
+    </ul>
+  </div>
+
+  <div class="pnotes">
+    <span class="pnlab">📝 Your Notes — Session Rules</span>
+    <textarea id="pn-rules" placeholder="Add your own notes here…" oninput="saveNote('rules')"></textarea>
+    <div class="psaved" id="sv-rules">Saved ✓</div>
+  </div>
+</div>
+
+<!-- ===== ALL DATA ===== -->
+<div class="tab-panel" id="tab-alldata">
+  <div class="section">
+    <div class="sh"><span class="si">📊</span><span class="st">All Numbers and Thresholds</span></div>
+    <table class="dtable">
+      <thead><tr><th>Metric / Setting</th><th>Value</th><th>Context</th></tr></thead>
+      <tbody>
+        <tr><td>Context efficiency at 256K tokens</td><td class="val">~91%</td><td>Claude Code performance benchmark</td></tr>
+        <tr><td>Context efficiency at 1M tokens (Opus)</td><td class="val">78.3%</td><td>Significant degradation</td></tr>
+        <tr><td>Context efficiency at 1M tokens (Sonnet)</td><td class="val">65.1%</td><td>Clear signal to start fresh</td></tr>
+        <tr><td>Recommended /clear threshold</td><td class="val">20–25%</td><td>Of total context window used</td></tr>
+        <tr><td>Compact trigger (alternative)</td><td class="val">60%</td><td>Use /compact to compress while preserving key decisions</td></tr>
+        <tr><td>Ultra think token budget</td><td class="val">~32K tokens</td><td>Max thinking allocation for hard problems</td></tr>
+        <tr><td>Windsor.ai free plan history</td><td class="val">30 days</td><td>Instagram data retention on free tier</td></tr>
+        <tr><td>Windsor.ai paid plan start</td><td class="val">$19/month</td><td>Unlocks longer history and more accounts</td></tr>
+        <tr><td>Windsor.ai setup time</td><td class="val">~5 minutes</td><td>MCP connector method</td></tr>
+        <tr><td>Claude in Chrome setup time</td><td class="val">~3 minutes</td><td>No extra account needed</td></tr>
+        <tr><td>Knee extension RTS threshold</td><td class="val">&gt;7.5 N/kg</td><td>Absolute, not LSI ratio</td></tr>
+        <tr><td>Knee flexion RTS threshold</td><td class="val">&gt;2.8 N/kg</td><td>Absolute benchmark</td></tr>
+        <tr><td>Plantar flexion RTS threshold</td><td class="val">&gt;18 N/kg</td><td>Absolute benchmark</td></tr>
+        <tr><td>Agent A brief output per run</td><td class="val">4–6 briefs</td><td>Matches Harry's filming volume</td></tr>
+        <tr><td>Agent A schedule</td><td class="val">Wednesdays</td><td>Content Scout runs</td></tr>
+        <tr><td>Agent B schedule</td><td class="val">Thu + Fri</td><td>Script Engine runs</td></tr>
+        <tr><td>Harry record day</td><td class="val">Saturdays</td><td>Wed scout → Thu/Fri script → Sat record cadence</td></tr>
+        <tr><td>CLAUDE.md recommended max length</td><td class="val">150–200 lines</td><td>Beyond this, rules start getting ignored</td></tr>
+        <tr><td>NCP quiz result paths</td><td class="val">9</td><td>3 routes × 3 tiers, all confirmed working</td></tr>
+        <tr><td>Active ManyChat keywords</td><td class="val">8+</td><td>NOCAP, BBG, RESET, MOBILITY, COACHME, ANKLE, GAINS, ACL variants</td></tr>
+        <tr><td>Content Flow Notion DB ID</td><td class="val">1170f8bb...</td><td>Ideas → Research → Scripting → READY TO SHOOT</td></tr>
+        <tr><td>Knowledge Bank Notion DB ID</td><td class="val">a7369f3e...</td><td>NCP clinical knowledge base</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="pnotes">
+    <span class="pnlab">📝 Your Notes — All Data</span>
+    <textarea id="pn-alldata" placeholder="Add your own notes here…" oninput="saveNote('alldata')"></textarea>
+    <div class="psaved" id="sv-alldata">Saved ✓</div>
+  </div>
+</div>
+
+<!-- ===== FULL NOTES ===== -->
+<div class="tab-panel" id="tab-fullnotes">
+  <div class="fn-search">
+    <input type="text" id="fn-input" placeholder="Search all notes…" oninput="fnSearch()">
+    <div class="fn-count" id="fn-count"></div>
+  </div>
+
+  <div class="fn-s" id="fns-overview">
+    <div class="fn-day">Overview</div>
+    <div class="fn-head">Core Thesis</div>
+    <div class="fn-i">Claude Code is a coding agent — describe what you want, it writes code, runs it, fixes errors, ships it</div>
+    <div class="fn-i">No coding knowledge required but you need to know exactly what you want before you ask</div>
+    <div class="fn-i">The CLAUDE.md file is the single biggest leverage point — build it once, every session reads it automatically</div>
+    <div class="fn-i">Think of it as a developer who works instantly and free, but needs clear briefs every time</div>
+    <div class="fn-head">NCP Priority Order</div>
+    <div class="fn-i">Priority 1: Ankle Program page — next product, build first</div>
+    <div class="fn-i">Priority 2: CLAUDE.md — permanent session briefing, already built June 2026</div>
+    <div class="fn-i">Priority 3: Instagram audit setup — Windsor.ai or Claude in Chrome</div>
+    <div class="fn-i">Priority 4: Content pipeline tool — trending topics + competitor dashboard</div>
+    <div class="fn-i">Ongoing: Clinical report generators — 1-to-1, combine, NCP combine</div>
+    <div class="fn-head">Key Principles</div>
+    <div class="fn-i">Context degrades over time — keep sessions short and focused on one task</div>
+    <div class="fn-i">One task per session — finish one, start fresh</div>
+    <div class="fn-i">Plan before code — use plan mode for anything touching multiple files</div>
+    <div class="fn-i">Verify everything — ask Claude to run checks on its own output</div>
+    <div class="fn-i">HANDOFF.md — before ending any long session, write what was tried, what worked, what's next</div>
+  </div>
+
+  <div class="fn-s" id="fns-whatitis">
+    <div class="fn-day">What Claude Code Is</div>
+    <div class="fn-head">Agentic Loop</div>
+    <div class="fn-i">Gather context → take action → verify results → repeat until done</div>
+    <div class="fn-i">Built-in tools: file operations, search, execution, web, browser (Chrome)</div>
+    <div class="fn-head">Context Window Constraint</div>
+    <div class="fn-i">At <span class="num">256K tokens</span> efficiency ~91%, at <span class="num">1M tokens</span> drops to 65–78%</div>
+    <div class="fn-i">Clear at 20–25% of context window — don't wait until it's full</div>
+    <div class="fn-i">/clear resets completely; /compact summarises and compresses</div>
+    <div class="fn-i">Fresh sessions consistently outperform long ones</div>
+  </div>
+
+  <div class="fn-s" id="fns-ncpmap">
+    <div class="fn-day">NCP Use Cases</div>
+    <div class="fn-head">Direct Builds</div>
+    <div class="fn-i">Product pages: Ankle Program, Defence Program, Knee ebook landing pages</div>
+    <div class="fn-i">ManyChat automation flows and webhook integrations</div>
+    <div class="fn-i">Content dashboard: track posts, competitor content, trending topics</div>
+    <div class="fn-i">Clinical report generators: 1-to-1, combine, NCP combine group reports</div>
+    <div class="fn-i">Quiz pages — already live on GitHub Pages, can extend or rebuild</div>
+    <div class="fn-i">One-off digital products: calculators, tools, interactive assets</div>
+    <div class="fn-head">Instagram Analysis</div>
+    <div class="fn-i">Windsor.ai: full API data — watch time, story exits, demographics, saves; up to 30 days free</div>
+    <div class="fn-i">Claude in Chrome: screen-level audit — visible likes, comments, reach; no extra account needed</div>
+    <div class="fn-i">Recommended: Chrome for quick checks, Windsor for deep recurring analysis</div>
+    <div class="fn-head">Clinical Benchmarks</div>
+    <div class="fn-i">Knee extension: >7.5 N/kg — absolute, not LSI ratio</div>
+    <div class="fn-i">Knee flexion: >2.8 N/kg</div>
+    <div class="fn-i">Plantar flexion: >18 N/kg</div>
+    <div class="fn-i">ACL-RSI score = psychological readiness measurement tool</div>
+    <div class="fn-i">Identical hop distances can reflect different strategies — ratio doesn't reveal hip-dominant vs knee-dominant pattern</div>
+    <div class="fn-head">Not Claude Code's Job</div>
+    <div class="fn-i">Auto-replying to DMs — that's ManyChat (DM setter locked until manual process proven)</div>
+    <div class="fn-i">Scheduling posts — separate tool</div>
+    <div class="fn-i">Running Cowork agent schedules — that's Claude Projects, not Claude Code</div>
+  </div>
+
+  <div class="fn-s" id="fns-setup">
+    <div class="fn-day">Setup Protocol</div>
+    <div class="fn-head">Week 1</div>
+    <div class="fn-i">Open Claude Code desktop app</div>
+    <div class="fn-i">Place CLAUDE.md at ~/.claude/CLAUDE.md</div>
+    <div class="fn-i">Run claude in any project folder to start a session</div>
+    <div class="fn-i">First build: Ankle Program landing page (recommended)</div>
+    <div class="fn-head">Key Commands</div>
+    <div class="fn-i">/init — scan project and auto-generate a CLAUDE.md for it</div>
+    <div class="fn-i">/clear — reset context between unrelated tasks</div>
+    <div class="fn-i">/compact — summarise conversation to free space</div>
+    <div class="fn-i">/status line — show model + directory + context % at bottom of terminal</div>
+    <div class="fn-i">Shift+Tab — cycle modes: default → plan mode → auto</div>
+    <div class="fn-i">Esc — stop Claude mid-action, context preserved</div>
+    <div class="fn-i">Esc+Esc or /rewind — roll back to previous checkpoint</div>
+    <div class="fn-i">ultra think — max thinking budget (~32K tokens) for hard decisions</div>
+    <div class="fn-i">alias c='claude' in ~/.zshrc — shortcut to start Claude Code fast</div>
+  </div>
+
+  <div class="fn-s" id="fns-claudemd">
+    <div class="fn-day">CLAUDE.md</div>
+    <div class="fn-i">Reads automatically at every session start — no manual loading needed</div>
+    <div class="fn-i">Location: ~/.claude/CLAUDE.md for global; project folder for project-specific</div>
+    <div class="fn-i">Contains: identity, 5 work categories, brand tokens, voice rules, tech stack, Notion DB IDs, agent system, ManyChat keywords, product ladder, clinical benchmarks, analysis workflows, session rules</div>
+    <div class="fn-i">DM setter lock: never build or suggest until Harry confirms manual process proven</div>
+    <div class="fn-i">Human gate lock: Harry manually flips Ideas → Research; never automate this step</div>
+    <div class="fn-i">Keep under 150–200 lines — beyond this, rules start getting ignored</div>
+  </div>
+
+  <div class="fn-s" id="fns-rules">
+    <div class="fn-day">Session Rules</div>
+    <div class="fn-head">Standard Session Flow</div>
+    <div class="fn-i">Open Claude Code → CLAUDE.md auto-loads → enter plan mode → describe task → review plan → execute → verify → commit → HANDOFF.md or /clear</div>
+    <div class="fn-head">Failure Patterns</div>
+    <div class="fn-i">Kitchen sink session: drifting between unrelated tasks — fix: /clear between tasks</div>
+    <div class="fn-i">Correcting twice: if wrong twice, /clear and write a better initial prompt</div>
+    <div class="fn-i">Bloated CLAUDE.md: too long = rules get ignored; prune ruthlessly</div>
+    <div class="fn-i">No verification: always ask Claude to prove output works before accepting</div>
+    <div class="fn-i">Infinite exploration: scope investigations narrowly or use subagents</div>
+    <div class="fn-head">Power Moves</div>
+    <div class="fn-i">Subagents for research: runs in separate context, reports back summary, keeps main session clean</div>
+    <div class="fn-i">Status line: real-time model + directory + context % in terminal</div>
+    <div class="fn-i">Ultra think: max thinking for architecture decisions</div>
+    <div class="fn-i">Rewind: roll back conversation, code, or both to any checkpoint</div>
+  </div>
+
+  <div class="pnotes">
+    <span class="pnlab">📝 Your Notes — Full Notes</span>
+    <textarea id="pn-fullnotes" placeholder="Add your own notes here…" oninput="saveNote('fullnotes')"></textarea>
+    <div class="psaved" id="sv-fullnotes">Saved ✓</div>
+  </div>
+</div>
+
+<!-- ===== ACTION ITEMS ===== -->
+<div class="tab-panel" id="tab-actions">
+  <div class="section">
+    <div class="sh"><span class="si">✅</span><span class="st">Action Items</span></div>
+    <div class="agrid">
+      <div class="acard">
+        <span class="alab">Do This Week</span>
+        <ul class="bl">
+          <li>Place CLAUDE.md at <code>~/.claude/CLAUDE.md</code></li>
+          <li>Open Claude Code desktop, start one session, verify CLAUDE.md loads</li>
+          <li>Set up /status line to see context % in real time</li>
+          <li>Brief and build the Ankle Program landing page</li>
+        </ul>
+      </div>
+      <div class="acard">
+        <span class="alab">Do Week 2–3</span>
+        <ul class="bl">
+          <li>Run Instagram audit via Claude in Chrome — log in, enable connector, run prompts</li>
+          <li>Set up Windsor.ai connector for recurring deep analysis</li>
+          <li>Run competitor audit on 2–3 basketball physio accounts</li>
+          <li>Learn /compact and /clear patterns through real sessions</li>
+        </ul>
+      </div>
+      <div class="acard">
+        <span class="alab">Build Queue</span>
+        <ul class="bl">
+          <li>Ankle Program landing page (highest priority)</li>
+          <li>Content pipeline research dashboard</li>
+          <li>Improve clinical report generators (3 types)</li>
+          <li>Defence Program page (after Ankle)</li>
+        </ul>
+      </div>
+      <div class="acard">
+        <span class="alab">Do NOT Build Yet</span>
+        <ul class="bl">
+          <li>DM setter automation — locked until manual close process proven</li>
+          <li>Klaviyo email sequences — comes after content loop proven</li>
+          <li>Any automation that bypasses Harry's Ideas → Research gate</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="pnotes">
+    <span class="pnlab">📝 Your Notes — Action Items</span>
+    <textarea id="pn-actions" placeholder="Add your own notes here…" oninput="saveNote('actions')"></textarea>
+    <div class="psaved" id="sv-actions">Saved ✓</div>
+  </div>
+</div>
+
+<!-- ===== NOTION PUSH ===== -->
+<div class="tab-panel" id="tab-notionpush">
+  <div class="section">
+    <div class="sh"><span class="si">📬</span><span class="st">Notion Knowledge Bank Entry</span></div>
+    <div class="nblock">
+      <div class="nrow"><span class="nkey">Page Title</span><span class="nval">Claude Code Setup — NCP System</span></div>
+      <div class="nrow"><span class="nkey">Source Type</span><span class="nval">Educational</span></div>
+      <div class="nrow"><span class="nkey">Status</span><span class="nval">In the Lab 🧪</span></div>
+      <div class="nrow"><span class="nkey">Topic Tags</span><span class="nval">
+        <div class="taglist">
+          <span class="tag">Educational</span>
+          <span class="tag">Training Systems</span>
+          <span class="tag">Coaching Philosophy</span>
+          <span class="tag">Gains</span>
+        </div>
+      </span></div>
+      <div class="nrow"><span class="nkey">One-line Summary</span><span class="nval">Complete setup guide for Claude Code at NCP — what it is, what to build, CLAUDE.md structure, session rules, and week-by-week onboarding protocol.</span></div>
+      <div class="nrow"><span class="nkey">Key Takeaways</span><span class="nval">
+        <ul class="bl" style="margin-top:4px">
+          <li>CLAUDE.md at ~/.claude/CLAUDE.md is the single highest-leverage setup step — every session reads it automatically</li>
+          <li>One task per session, clear context between unrelated tasks, always use plan mode for multi-file builds</li>
+          <li>Build order: Ankle Program page → Instagram audit → content pipeline dashboard → clinical report improvements</li>
+        </ul>
+      </span></div>
+      <div class="nrow"><span class="nkey">Clinical Relevance</span><span class="nval">Claude Code builds the clinical report tools (1-to-1 assessments, combine reports, NCP group combine) and automates report generation from clinical notes. Clinical benchmarks locked into CLAUDE.md ensure every build uses Harry's actual thresholds, not generic physio info.</span></div>
+      <div class="nrow"><span class="nkey">Link</span><span class="nval">—</span></div>
+    </div>
+  </div>
+
+  <div class="pnotes">
+    <span class="pnlab">📝 Your Notes — Notion Push</span>
+    <textarea id="pn-notionpush" placeholder="Add your own notes here…" oninput="saveNote('notionpush')"></textarea>
+    <div class="psaved" id="sv-notionpush">Saved ✓</div>
+  </div>
+</div>
+
+</div><!-- /content -->
+
+<script>
+// TAB SWITCHING
+function sw(key,btn){
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tbtn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+key).classList.add('active');
+  btn.classList.add('active');
+}
+
+// FULL NOTES SEARCH
+function fnSearch(){
+  const q=document.getElementById('fn-input').value.trim().toLowerCase();
+  const sections=document.querySelectorAll('.fn-s');
+  let total=0;
+  sections.forEach(s=>{
+    const items=s.querySelectorAll('.fn-i');
+    let sectionMatches=0;
+    items.forEach(item=>{
+      const txt=item.textContent.toLowerCase();
+      if(!q){item.innerHTML=item.textContent;item.style.display='';sectionMatches++;return;}
+      if(txt.includes(q)){
+        item.innerHTML=item.textContent.replace(new RegExp(q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'gi'),m=>`<mark>${m}</mark>`);
+        item.style.display='';sectionMatches++;total++;
+      } else {item.style.display='none';}
+    });
+    s.classList.toggle('hidden',q!==''&&sectionMatches===0);
+  });
+  document.getElementById('fn-count').textContent=q?`${total} match${total!==1?'es':''}`:'' ;
+}
+
+// LOCAL STORAGE NOTES
+const PREFIX='ncp-cc-';
+function saveNote(k){
+  const ta=document.getElementById('pn-'+k);
+  const sv=document.getElementById('sv-'+k);
+  try{localStorage.setItem(PREFIX+k,ta.value);sv.style.opacity='1';setTimeout(()=>sv.style.opacity='0',1500);}catch(e){}
+}
+function loadNotes(){
+  ['overview','whatitis','ncpmap','setup','claudemd','rules','alldata','fullnotes','actions','notionpush'].forEach(k=>{
+    const ta=document.getElementById('pn-'+k);
+    if(!ta)return;
+    try{const v=localStorage.getItem(PREFIX+k);if(v)ta.value=v;}catch(e){}
+  });
+}
+loadNotes();
+</script>
+</body>
+</html>
