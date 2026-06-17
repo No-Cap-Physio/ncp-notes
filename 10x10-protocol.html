@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The 10×10 Protocol — NCP Master Reference</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#0F1B2D;--np:#162542;--np2:#1E2F4D;--nl:#2A3F5F;
+  --nk:#F5F1E8;--nd:#A8B4C4;--nm:#6C7A8F;
+  --tan:#D4A574;--td:rgba(212,165,116,0.12);--tb:rgba(212,165,116,0.28);
+  --bad:#EF476F;--warn:#FFB703;--wt:#C58A00;--good:#06D6A0;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--navy);color:var(--nk);font-family:'Inter',sans-serif;font-size:14px;line-height:1.8;-webkit-font-smoothing:antialiased}
+
+/* LAYOUT */
+.layout{display:grid;grid-template-columns:240px 1fr;min-height:100vh}
+nav{position:sticky;top:0;height:100vh;overflow-y:auto;background:var(--np);border-right:1px solid var(--nl);padding:24px 16px}
+nav .logo{font-weight:800;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--tan);margin-bottom:4px}
+nav .sub{font-size:11px;color:var(--nm);margin-bottom:24px}
+nav ol{list-style:none;counter-reset:n}
+nav li{counter-increment:n;margin:1px 0}
+nav a{display:flex;gap:8px;align-items:baseline;color:var(--nd);font-size:12.5px;padding:5px 8px;border-radius:4px;text-decoration:none;transition:all .15s}
+nav a::before{content:counter(n,decimal-leading-zero);font-size:10px;color:var(--nl);min-width:20px;font-weight:600}
+nav a:hover{color:var(--nk);background:var(--td)}
+nav a.active{color:var(--tan)!important;background:var(--td)}
+nav a.active::before{color:var(--tan)}
+
+main{padding:40px 48px 120px;min-width:0}
+
+/* HERO */
+.hero{padding-bottom:40px;border-bottom:1px solid var(--nl);margin-bottom:48px}
+.eyebrow{font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--tan);font-weight:600;margin-bottom:14px}
+.hero h1{font-size:clamp(40px,6vw,72px);font-weight:800;line-height:1;letter-spacing:-.02em;margin-bottom:18px}
+.hero h1 .x{color:var(--tan);text-shadow:0 0 40px rgba(212,165,116,.4)}
+.hero .lede{font-size:16px;color:var(--nd);max-width:66ch;line-height:1.7;margin-bottom:24px}
+.tags{display:flex;gap:8px;flex-wrap:wrap}
+.tag{padding:5px 12px;border:1px solid var(--nl);border-radius:99px;font-size:11px;color:var(--nm);letter-spacing:.06em}
+.tag.on{border-color:var(--tb);color:var(--tan);background:var(--td)}
+
+/* SECTIONS */
+section{margin-bottom:60px;scroll-margin-top:24px}
+.secn{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--tan);font-weight:700;margin-bottom:6px}
+h2{font-size:clamp(22px,3vw,32px);font-weight:800;letter-spacing:-.01em;margin-bottom:20px;line-height:1.15}
+h3{font-size:17px;font-weight:700;color:var(--nk);margin:26px 0 10px}
+p{margin-bottom:14px;max-width:72ch;color:var(--nd)}
+p strong,li strong{color:var(--nk)}
+.num{color:var(--tan);font-weight:700;text-shadow:0 0 12px rgba(212,165,116,.35)}
+
+/* BULLET LISTS */
+ul.bl{list-style:none;margin:0 0 16px;padding:0;max-width:72ch}
+ul.bl li{position:relative;padding-left:20px;margin-bottom:8px;color:var(--nd)}
+ul.bl li::before{content:"›";position:absolute;left:0;color:var(--tan);font-weight:700;font-size:15px;line-height:1.6}
+ol.bl{list-style:none;counter-reset:ol;margin:0 0 16px;padding:0;max-width:72ch}
+ol.bl li{counter-increment:ol;position:relative;padding-left:26px;margin-bottom:10px;color:var(--nd)}
+ol.bl li::before{content:counter(ol);position:absolute;left:0;top:1px;font-size:11px;font-weight:700;color:var(--tan);text-shadow:0 0 10px rgba(212,165,116,.4)}
+
+/* CARDS */
+.card{background:var(--np);border:1px solid var(--nl);border-radius:8px;padding:18px 20px;margin:14px 0;max-width:72ch}
+.card .ct{font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--tan);margin-bottom:10px}
+.card.hi{border-color:var(--tb);background:var(--td)}
+.card.hi .ct{color:var(--tan)}
+.card.warn{border-color:rgba(239,71,111,.35);background:rgba(239,71,111,.07)}
+.card.warn .ct{color:var(--bad)}
+.card.flag{border-color:rgba(255,183,3,.3);background:rgba(255,183,3,.06)}
+.card.flag .ct{color:var(--warn)}
+.card.good{border-color:rgba(6,214,160,.3);background:rgba(6,214,160,.07)}
+.card.good .ct{color:var(--good)}
+
+/* PROTOCOL BLOCKS */
+.proto{background:var(--np2);border:1px solid var(--nl);border-radius:8px;padding:16px 20px;margin:14px 0;max-width:72ch}
+.pn{font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--tan);margin-bottom:10px;border-bottom:1px solid var(--nl);padding-bottom:8px}
+.proto.wp{border-color:rgba(239,71,111,.3)}
+.proto.wp .pn{color:var(--bad)}
+
+/* TABLES */
+.tablewrap{overflow-x:auto;margin:16px 0;border-radius:8px;border:1px solid var(--nl);max-width:72ch}
+table{width:100%;border-collapse:collapse;font-size:13.5px;min-width:420px}
+th{background:var(--np2);color:var(--tan);font-size:10px;letter-spacing:.12em;text-transform:uppercase;font-weight:700;padding:10px 14px;text-align:left;border-bottom:1px solid var(--nl)}
+td{padding:10px 14px;border-bottom:1px solid rgba(42,63,95,.5);color:var(--nd);vertical-align:top}
+td:first-child{color:var(--nk);font-weight:600}
+td.val{color:var(--tan);font-weight:700;text-shadow:0 0 10px rgba(212,165,116,.3)}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(255,255,255,.02)}
+
+/* GRID */
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:14px 0;max-width:72ch}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:14px 0}
+
+/* VELOCITY BARS (signature element) */
+.ramp{margin:20px 0;max-width:72ch}
+.ramp-row{display:grid;grid-template-columns:72px 1fr 52px;align-items:center;gap:12px;margin-bottom:10px}
+.ramp-dist{font-size:12px;font-weight:700;color:var(--nk)}
+.ramp-bar{height:28px;background:var(--np2);border-radius:4px;overflow:hidden;border:1px solid var(--nl)}
+.ramp-fill{height:100%;background:linear-gradient(90deg,rgba(212,165,116,.4),var(--tan));border-radius:3px;display:flex;align-items:center;padding-left:10px;transition:width .4s ease}
+.ramp-lbl{font-size:10px;font-weight:600;color:var(--navy);letter-spacing:.06em;white-space:nowrap}
+.ramp-pct{font-size:12px;font-weight:700;color:var(--tan);text-shadow:0 0 8px rgba(212,165,116,.4)}
+
+/* PHASE BLOCKS */
+.phase{border:1px solid var(--nl);border-radius:8px;margin:12px 0;overflow:hidden;max-width:72ch}
+.phase-head{background:var(--np2);padding:12px 18px;display:flex;gap:14px;align-items:baseline}
+.phase-n{font-size:10px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--tan)}
+.phase-t{font-size:16px;font-weight:700;color:var(--nk)}
+.phase-body{padding:14px 18px}
+.phase.gate{border-color:var(--tb)}
+.phase.gate .phase-head{background:var(--td)}
+
+/* START TYPE TABLE */
+.start-grid{display:grid;grid-template-columns:1fr;gap:10px;margin:16px 0;max-width:72ch}
+.start-card{background:var(--np2);border:1px solid var(--nl);border-radius:8px;padding:14px 18px}
+.start-card .sn{font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--tan);margin-bottom:6px}
+.start-card h4{font-size:15px;font-weight:700;color:var(--nk);margin-bottom:8px}
+
+/* CUE BLOCK */
+.cue{background:var(--np2);border-left:3px solid var(--tan);border-radius:0 6px 6px 0;padding:12px 16px;margin:12px 0;font-style:italic;color:var(--nd);max-width:66ch}
+
+/* PRIORITY */
+.pri{display:flex;gap:12px;align-items:flex-start;background:var(--np);border:1px solid var(--nl);border-radius:6px;padding:12px 16px;margin:8px 0;max-width:72ch}
+.plab{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--nm);min-width:80px;padding-top:2px}
+.pri.high .plab{color:var(--tan)}
+.pb{color:var(--nd)}
+.pb strong{color:var(--nk)}
+
+/* PERSONAL NOTES */
+.pnotes{background:var(--np);border:1px solid var(--nl);border-radius:8px;padding:16px;margin-top:32px}
+.pnlab{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--nm);display:block;margin-bottom:8px}
+.pnotes textarea{width:100%;background:var(--np2);border:1px solid var(--nl);border-radius:6px;color:var(--nk);font-family:'Inter',sans-serif;font-size:13px;line-height:1.7;padding:12px;resize:vertical;min-height:100px;outline:none}
+.pnotes textarea::placeholder{color:var(--nm)}
+.pnotes textarea:focus{border-color:var(--tan)}
+.psaved{font-size:11px;color:var(--good);margin-top:6px;opacity:0;transition:opacity .3s}
+
+/* NOTION PUSH */
+.nblock{background:var(--np);border:1px solid var(--nl);border-radius:8px;overflow:hidden;max-width:72ch}
+.nrow{display:grid;grid-template-columns:160px 1fr;border-bottom:1px solid var(--nl)}
+.nrow:last-child{border-bottom:none}
+.nkey{padding:12px 16px;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--nm);background:var(--np2)}
+.nval{padding:12px 16px;color:var(--nd)}
+.taglist{display:flex;flex-wrap:wrap;gap:6px}
+.ntag{padding:3px 10px;border:1px solid var(--tb);border-radius:99px;font-size:11px;color:var(--tan);background:var(--td)}
+
+/* MOBILE */
+.hamburger{display:none}
+@media(max-width:900px){
+  .layout{grid-template-columns:1fr}
+  nav{position:fixed;top:0;left:0;width:260px;height:100vh;z-index:50;transform:translateX(-100%);transition:transform .25s}
+  nav.open{transform:translateX(0)}
+  main{padding:24px 20px 100px}
+  .hamburger{display:flex;position:fixed;top:12px;right:12px;z-index:60;background:var(--tan);color:var(--navy);border:none;font-size:11px;font-weight:800;letter-spacing:.1em;padding:9px 14px;border-radius:6px;cursor:pointer}
+  .grid2,.grid3{grid-template-columns:1fr}
+  .nrow{grid-template-columns:1fr}
+  .nkey{border-bottom:1px solid var(--nl)}
+}
+</style>
+</head>
+<body>
+
+<button class="hamburger" id="ham">MENU</button>
+
+<div class="layout">
+<nav id="nav">
+  <div class="logo">No Cap Physio</div>
+  <div class="sub">Master Reference · v2.0</div>
+  <ol>
+    <li><a href="#s0">30-second version</a></li>
+    <li><a href="#s1">Origins</a></li>
+    <li><a href="#s2">Why it works</a></li>
+    <li><a href="#s3">Core structure</a></li>
+    <li><a href="#s4">The three dials</a></li>
+    <li><a href="#s5">Start type modifications</a></li>
+    <li><a href="#s6">High-low programming</a></li>
+    <li><a href="#s7">Monitoring</a></li>
+    <li><a href="#s8">Short-to-long progression</a></li>
+    <li><a href="#s9">Variations</a></li>
+    <li><a href="#s10">Injury application</a></li>
+    <li><a href="#s11">NCP return-to-run system</a></li>
+    <li><a href="#s12">Cues &amp; mistakes</a></li>
+    <li><a href="#s13">Key takeaways</a></li>
+    <li><a href="#s14">All data</a></li>
+    <li><a href="#s15">Notion push</a></li>
+  </ol>
+</nav>
+
+<main>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="eyebrow">Master Reference · Return to Running · v2.0</div>
+  <h1>The 10<span class="x">×</span>10 Protocol</h1>
+  <p class="lede">Everything Derek Hansen has published on the 10×10 repeat sprint protocol — reconstructed, extended, and reframed for physiotherapists and S&C coaches working with ACL, post-surgical knees, ankles, and hip injuries.</p>
+  <div class="tags">
+    <span class="tag on">ACL Rehab</span>
+    <span class="tag on">Ankle</span>
+    <span class="tag on">Return to Run</span>
+    <span class="tag">Knee Surgery</span>
+    <span class="tag">Sprint Training</span>
+    <span class="tag">S&amp;C</span>
+  </div>
+</div>
+
+<!-- 00 -->
+<section id="s0">
+  <div class="secn">00</div>
+  <h2>The 30-Second Version</h2>
+  <p>Ten 10-meter sprint accelerations done back to back, repeated for multiple sets. You sprint <span class="num">10m</span>, decelerate, turn, sprint back. That is one rep. Ten reps is one set. Each set covers <span class="num">100m</span> total.</p>
+  <p>That is the whole thing. <strong>The simplicity is the point.</strong></p>
+  <div class="card hi">
+    <div class="ct">Why you care</div>
+    <ul class="bl">
+      <li>Cleanest framework for safely re-loading running after lower limb injury</li>
+      <li>You control distance, density, and intensity with cones and a stopwatch</li>
+      <li>No fancy gear required — works in a <span class="num">25m</span> hallway or on a full field</li>
+      <li>Same protocol runs rehab, conditioning, and acceleration development</li>
+    </ul>
+  </div>
+</section>
+
+<!-- 01 -->
+<section id="s1">
+  <div class="secn">01</div>
+  <h2>Origins</h2>
+  <ul class="bl">
+    <li><strong>Gerard Mach (Poland)</strong> — original architect. Understood keeping fitness during injury beats complete rest.</li>
+    <li><strong>Charlie Francis and Dr. Douglas Clement (Canada, 1970s)</strong> — popularised it for hamstring strains in track and field.</li>
+    <li><strong>Derek Hansen</strong> — spent <span class="num">35+</span> years developing it from a single rehab tool into a full performance system.</li>
+    <li>No MRI, no ultrasound. Built on basic biomechanics and common sense. Survived because it works.</li>
+  </ul>
+  <div class="card hi">
+    <div class="ct">The original math</div>
+    <ul class="bl">
+      <li>Sprinter doing <span class="num">6 × 100m</span> = <span class="num">600m</span> per session</li>
+      <li>Injured athlete can't run 100m, so: <span class="num">60 × 10m</span> = <span class="num">600m</span> same volume</li>
+      <li>Organised as <span class="num">6 sets × 10 reps</span> or <span class="num">10 sets × 6 reps</span> — both work</li>
+      <li>Far lower tissue risk, fitness preserved, return to full training almost seamless</li>
+    </ul>
+  </div>
+</section>
+
+<!-- 02 -->
+<section id="s2">
+  <div class="secn">02</div>
+  <h2>Why It Actually Works — 5 Mechanisms</h2>
+  <ol class="bl">
+    <li><strong>Low eccentric tissue load.</strong> In a <span class="num">10m</span> sprint (~<span class="num">6–7</span> steps) the body stays in forward-lean acceleration posture. Foot strikes while knee is still bent. Limits hamstring lengthening under load. Strength stimulus without dangerous stretch. Adjust posture and same logic protects other tissues.</li>
+    <li><strong>Volume without peak velocity.</strong> Density keeps intensity sub-maximal. Stack <span class="num">40–60</span> reps per session — impossible at full sprint. A <span class="num">10m</span> acceleration reaches ~<span class="num">70–75%</span> of max velocity, which is actually a meaningful speed in sport contexts (game average is <span class="num">&lt;50%</span> max velocity for <span class="num">80–85%</span> of play).</li>
+    <li><strong>Technique reps.</strong> Sub-maximal conditions = best environment to groove mechanics. Dozens of chances to clean up posture, shin angle, arm action until it's automatic.</li>
+    <li><strong>General supercompensation.</strong> Density creates a broad fitness lift covering speed, strength, and endurance simultaneously. Upper body, core, glutes, hamstrings, calves, feet — total body stimulus.</li>
+    <li><strong>Athletes return sharper than healthy teammates.</strong> Injured athlete doing <span class="num">4</span> sets of 10×10 daily = <span class="num">40</span> near-max accelerations per day. Healthy teammates jogging, walking, standing in practice. The rehabbing athlete comes back fitter.</li>
+  </ol>
+  <div class="card">
+    <div class="ct">Evidence of strength gains</div>
+    <ul class="bl">
+      <li>Athletes reported higher <strong>Nordboard scores</strong> after just <span class="num">2 weeks</span> of 10×10 hamstring rehab</li>
+      <li>This confirms the protocol is genuinely strengthening the hamstring, not just maintaining it</li>
+    </ul>
+  </div>
+</section>
+
+<!-- 03 -->
+<section id="s3">
+  <div class="secn">03</div>
+  <h2>Core Structure</h2>
+  <div class="tablewrap">
+    <table>
+      <thead><tr><th>Variable</th><th>Default</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td>Reps per set</td><td class="val">10</td><td>Drop to 5–6 early in onboarding or if fatigue kills mechanics</td></tr>
+        <tr><td>Distance per rep</td><td class="val">10m / 10yd</td><td>Each rep is ~<span class="num">6–7</span> strides — can pace it without a tape measure</td></tr>
+        <tr><td>Sets per session</td><td class="val">3–4</td><td>Start at 3, build to 4–6 across rehab block, up to 10 max (very high load)</td></tr>
+        <tr><td>Acceleration zone</td><td class="val">10m</td><td>The working distance</td></tr>
+        <tr><td>Deceleration zone</td><td class="val">10–15m</td><td>More decel space for faster athletes — protects shins and quads</td></tr>
+        <tr><td>Total linear space</td><td class="val">25–30m</td><td>Minimum 25m wall to wall for an indoor setup</td></tr>
+        <tr><td>Sprint itself</td><td class="val">~1.5–2s</td><td>A 10m sprint clocks around 1.6s with timing gates</td></tr>
+        <tr><td>Rep interval (conditioning)</td><td class="val">~6s</td><td>~2s sprint + 4s decel/reset</td></tr>
+        <tr><td>Set completion (conditioning)</td><td class="val">~60s</td><td>HR can reach 180–190 bpm</td></tr>
+        <tr><td>Set completion (rehab)</td><td class="val">~90–120s</td><td>10–12s per rep with more athlete awareness</td></tr>
+        <tr><td>Set completion (speed)</td><td class="val">~150–200s</td><td>18–30s per rep, maximum effort quality</td></tr>
+        <tr><td>Rest between sets</td><td class="val">2–5 min</td><td>Typically 3 min; shorten as fitness improves (down to 2 min for well-conditioned)</td></tr>
+        <tr><td>Total session volume (3 sets)</td><td class="val">300m / 30 reps</td><td>Done in ~9 min including rest — very time-efficient</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="card hi">
+    <div class="ct">A real block's output</div>
+    <ul class="bl">
+      <li><span class="num">~10</span> sessions over <span class="num">2</span> weeks for a Grade 1–2 hamstring strain</li>
+      <li><span class="num">4</span> sets × <span class="num">10</span> reps most days = <span class="num">40</span> reps/day</li>
+      <li><span class="num">~400</span> total reps, <span class="num">~4km</span> of sprint volume across the block</li>
+      <li>Athletes returned to field "faster and fresher than before injury"</li>
+    </ul>
+  </div>
+</section>
+
+<!-- 04 -->
+<section id="s4">
+  <div class="secn">04</div>
+  <h2>The Three Dials — One Structure, Three Outcomes</h2>
+  <p>Change the <strong>work-to-rest ratio</strong> to flip the goal. Same cones, same distance, different adaptation.</p>
+  <div class="grid3">
+    <div class="card">
+      <div class="ct">Conditioning</div>
+      <ul class="bl">
+        <li>Set time: <span class="num">~60s</span></li>
+        <li>Rep interval: <span class="num">~6s</span></li>
+        <li>HR peaks: <span class="num">180–190bpm</span></li>
+        <li>Effort: sub-max, continuous</li>
+        <li>Goal: work capacity + aerobic base</li>
+      </ul>
+    </div>
+    <div class="card hi">
+      <div class="ct">Rehab / RTP ← home base</div>
+      <ul class="bl">
+        <li>Set time: <span class="num">90–120s</span></li>
+        <li>Rep interval: <span class="num">10–12s</span></li>
+        <li>Effort: sub-max with high coach/athlete awareness</li>
+        <li>Goal: safe re-loading + tissue tolerance</li>
+        <li>Density high enough to build capacity, velocity low enough to protect</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="ct">Speed / Acceleration</div>
+      <ul class="bl">
+        <li>Set time: <span class="num">150–200s</span></li>
+        <li>Rep interval: <span class="num">18–30s</span></li>
+        <li>Effort: maximal, no drop-off allowed</li>
+        <li>Goal: repeat sprint ability + acceleration quality</li>
+        <li>All <span class="num">10</span> reps at identical quality</li>
+      </ul>
+    </div>
+  </div>
+  <div class="card">
+    <div class="ct">Morphing the protocol</div>
+    <ul class="bl">
+      <li>You can restructure entirely: <strong>5×20</strong>, <strong>4×25</strong>, <strong>7×15</strong></li>
+      <li>Target ~<span class="num">100m</span> per set regardless of rep/distance combo</li>
+      <li>As athletes progress: <span class="num">15×7</span>, <span class="num">20×5</span>, <span class="num">25×4</span>, <span class="num">30×4</span> (~<span class="num">120m</span>)</li>
+      <li>MLB pitchers used it timed to the pitch clock — that's how flexible it is</li>
+    </ul>
+  </div>
+</section>
+
+<!-- 05 — START TYPE MODIFICATIONS (NEW) -->
+<section id="s5">
+  <div class="secn">05</div>
+  <h2>Start Type Modifications</h2>
+  <p>Hansen uses four distinct start positions to load the 10×10 differently. Each changes the eccentric demand, force angle, and CNS intensity. Progress through these as tissue tolerance improves.</p>
+  <div class="start-grid">
+    <div class="start-card">
+      <div class="sn">Start Type 1 · Lowest load</div>
+      <h4>High Falling Start</h4>
+      <ul class="bl">
+        <li><strong>Position:</strong> tall upright stance, lean forward from ankles, fall into sprint</li>
+        <li><strong>Rep interval:</strong> <span class="num">8–9s</span></li>
+        <li><strong>Set completion:</strong> <span class="num">80–90s</span></li>
+        <li><strong>Best for:</strong> early rehab, ankle/calf/hip flexor injuries, onboarding, athletes with poor deceleration control</li>
+        <li><strong>Load:</strong> lowest of the four — least CNS demand, most protective</li>
+      </ul>
+    </div>
+    <div class="start-card">
+      <div class="sn">Start Type 2 · Moderate load</div>
+      <h4>Low Falling Start</h4>
+      <ul class="bl">
+        <li><strong>Position:</strong> deeper squat-like position before the fall — hands NOT touching the floor</li>
+        <li><strong>Rep interval:</strong> <span class="num">12–40s</span> (wide range depending on load target)</li>
+        <li><strong>Set completion:</strong> <span class="num">120–140s</span></li>
+        <li><strong>Best for:</strong> intermediate rehab stage, building posterior chain activation, higher knee load</li>
+        <li><strong>Load:</strong> moderate — deeper hip/knee flexion increases demand</li>
+      </ul>
+    </div>
+    <div class="start-card">
+      <div class="sn">Start Type 3 · High load</div>
+      <h4>Three-Point Start</h4>
+      <ul class="bl">
+        <li><strong>Position:</strong> one hand down, track-style set position</li>
+        <li><strong>Rep interval:</strong> <span class="num">~18s</span></li>
+        <li><strong>Set completion:</strong> <span class="num">~180s</span></li>
+        <li><strong>Rest between sets:</strong> <span class="num">2–5 min</span></li>
+        <li><strong>Best for:</strong> late-stage RTP, performance phase, athletes needing maximal acceleration mechanics</li>
+        <li><strong>Load:</strong> high — maximum hip flexion and posterior chain demand at start</li>
+      </ul>
+    </div>
+    <div class="start-card">
+      <div class="sn">Start Type 4 · Maximum load</div>
+      <h4>Push-Up Start</h4>
+      <ul class="bl">
+        <li><strong>Position:</strong> begin in push-up position on the ground, explode into sprint</li>
+        <li><strong>Rep interval:</strong> <span class="num">~20s</span></li>
+        <li><strong>Set completion:</strong> <span class="num">~200s</span></li>
+        <li><strong>Rest between sets:</strong> <span class="num">2–5 min</span></li>
+        <li><strong>Best for:</strong> GPP performance work, highly conditioned athletes, sport-specific reaction training</li>
+        <li><strong>Load:</strong> maximum — most demanding start position, requires full CNS recovery between reps</li>
+      </ul>
+    </div>
+  </div>
+  <div class="card hi">
+    <div class="ct">How to use these in rehab</div>
+    <ul class="bl">
+      <li><strong>Ankle / calf / hip flexor:</strong> start with High Falling Start (upright posture), build into Low Falling Start as tissue tolerates more load</li>
+      <li><strong>Knee / ACL:</strong> begin with High Falling Start once criteria met, progress to Low → Three-Point as quad symmetry improves</li>
+      <li><strong>Hamstring:</strong> can progress faster through the continuum — acceleration posture is already protective for the hamstring</li>
+      <li><strong>Do not rush start type progression</strong> — each start significantly changes the demand on the system</li>
+    </ul>
+  </div>
+</section>
+
+<!-- 06 — HIGH-LOW (NEW) -->
+<section id="s6">
+  <div class="secn">06</div>
+  <h2>High-Low Programming — Where 10×10 Sits</h2>
+  <p>The High-Low concept from Charlie Francis gives 10×10 its programming context. Knowing where it sits on the intensity spectrum is what lets you use it intelligently across a full week.</p>
+  <h3>The Three Zones</h3>
+  <div class="tablewrap">
+    <table>
+      <thead><tr><th>Zone</th><th>Velocity</th><th>Effect</th><th>Where 10×10 sits</th></tr></thead>
+      <tbody>
+        <tr><td>High</td><td class="val">90–100%</td><td>Direct CNS adaptation, maximal recruitment, speed gains. Requires 48–72h recovery.</td><td>Speed dial (18–30s rest/rep) — top end</td></tr>
+        <tr><td>Medium</td><td class="val">75–90%</td><td>Significant peripheral and central fatigue. High injury risk. Impairs recovery. Francis avoided this zone for sprinters.</td><td>Avoid — do not get stuck here</td></tr>
+        <tr><td>Low</td><td class="val">&lt;70–75%</td><td>Circulatory recovery, capillary density, reduces injury risk. Does not directly build speed but supports it.</td><td>Conditioning dial (6s/rep) sits near the top of low</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="card hi">
+    <div class="ct">Where 10×10 lives on the spectrum</div>
+    <ul class="bl">
+      <li>A <span class="num">10m</span> rep reaches ~<span class="num">70–75%</span> max velocity — puts it at the <strong>top end of Low / entry of High</strong> depending on rest</li>
+      <li>Short rest (conditioning dial): sits comfortably in Low — high volume, recoverable, safe</li>
+      <li>Long rest (speed dial): pushes into High — CNS involvement, quality reps, requires 48–72h recovery</li>
+      <li>This is why the protocol can run on consecutive days (conditioning/rehab) but speed-dial use needs more recovery</li>
+    </ul>
+  </div>
+  <h3>Weekly Structure for Rehab</h3>
+  <ul class="bl">
+    <li><strong>Consecutive days:</strong> Hansen runs <span class="num">3–4</span> loading days in a row, then 1 recovery day, then repeat</li>
+    <li><strong>Intensity progression across days:</strong> Day 1 at <span class="num">60%</span> → Day 2 at <span class="num">70–75%</span> → Day 3 at <span class="num">75%</span> → Day 4 at <span class="num">75–80%</span></li>
+    <li>Volume stays constant day-to-day (e.g., <span class="num">3</span> sets) while intensity naturally rises as athlete feels better</li>
+    <li>If you also increase volume AND intensity simultaneously, overload risk grows fast</li>
+    <li>Recovery day: upper body weights or low-intensity work only</li>
+  </ul>
+  <h3>High-Low Ratios by Sport</h3>
+  <p>Francis's data on elite sprinters: <span class="num">35%</span> high-intensity, <span class="num">65%</span> low-intensity. For team sport athletes the balance shifts further toward low. For rehab populations, the 10×10 conditioning dial does most of the heavy lifting in the low zone.</p>
+  <h3>GPP Phase Note</h3>
+  <ul class="bl">
+    <li>In GPP, intensity stays relatively flat day to day — less dramatic high-low swings</li>
+    <li>Build general base first. Polarise later (specific prep, competitive phase)</li>
+    <li>Short-changing GPP kills your peak when it matters most</li>
+    <li>The 10×10 in conditioning mode is perfect GPP work — high volume, low CNS stress, builds fitness foundation</li>
+  </ul>
+  <div class="card warn">
+    <div class="ct">The medium zone warning</div>
+    <ul class="bl">
+      <li>Avoid sustained work at <span class="num">75–90%</span> velocity — this is the glycolytic grind zone</li>
+      <li>High fatigue, high injury risk, poor recovery, and no direct speed gains</li>
+      <li>If your 10×10 session leaves athletes in a 400m-race-style pit of despair, you're in the medium zone — reduce density</li>
+    </ul>
+  </div>
+</section>
+
+<!-- 07 -->
+<section id="s7">
+  <div class="secn">07</div>
+  <h2>Monitoring</h2>
+  <p>You do not need tech. But if you have it, here is the hierarchy.</p>
+  <div class="proto">
+    <div class="pn">Tier 1 — Stopwatch (always)</div>
+    <ul class="bl">
+      <li>Time the full set of 10 reps end to end</li>
+      <li>Track across sessions — stable or improving set times = capacity building</li>
+      <li>Use a countdown (3-2-1-go or whistle) to control work-to-rest precision</li>
+    </ul>
+  </div>
+  <div class="proto">
+    <div class="pn">Tier 2 — Timing Gates</div>
+    <ul class="bl">
+      <li>Capture individual <span class="num">10m</span> times rep by rep — aiming for ~<span class="num">1.6s</span> per rep</li>
+      <li>Key signal: <strong>reproducibility</strong> across the full set</li>
+      <li>Well-conditioned athlete: holds times across <span class="num">7–8</span> reps before minimal drop-off</li>
+      <li>Underprepared athlete: 1–3 good reps then <span class="num">20–25%</span> drop-off</li>
+      <li>Target: less than <span class="num">10%</span> drop-off across the full set</li>
+      <li>Limitation: requires one athlete at a time — impractical for large groups</li>
+    </ul>
+  </div>
+  <div class="proto">
+    <div class="pn">Tier 3 — GPS</div>
+    <ul class="bl">
+      <li>Captures velocity, acceleration, and deceleration across large groups simultaneously</li>
+      <li>Set velocity thresholds to keep intensity honest across the session</li>
+      <li>Can compare sprint test data against 10×10 performance over time</li>
+    </ul>
+  </div>
+  <div class="proto">
+    <div class="pn">Tier 4 — Moxie Monitor (advanced)</div>
+    <ul class="bl">
+      <li>Local muscle oxygenation monitoring — tracks how fast O₂ depletes in the working muscle</li>
+      <li>Rapid depletion = muscle fatiguing quickly, possibly not ready for full loading</li>
+      <li>Useful injury monitoring tool in early RTP stages</li>
+    </ul>
+  </div>
+  <div class="card hi">
+    <div class="ct">Using times as a rehab speed governor</div>
+    <ul class="bl">
+      <li>Get the athlete's best 10m time from a sprint test first</li>
+      <li>In early rehab, cap them at <span class="num">50%</span> slower than that time</li>
+      <li>Example: best time = <span class="num">1.6s</span> → rehab start = no faster than <span class="num">2.3–2.4s</span></li>
+      <li>Each session, shave off <span class="num">5–10%</span> until they're back at full velocity</li>
+      <li>This is the single best way to prevent athletes running too fast too early</li>
+    </ul>
+  </div>
+  <p>Always video sessions. Action camera on the side gives you a coaching review layer that real-time supervision misses, especially with larger groups.</p>
+</section>
+
+<!-- 08 -->
+<section id="s8">
+  <div class="secn">08</div>
+  <h2>Short-to-Long Progression — The RTP Engine</h2>
+  <p>As tissue tolerates more, lengthen the sprint to raise velocity in controlled steps. This turns 10×10 from a drill into a return-to-running system.</p>
+  <div class="ramp">
+    <div class="ramp-row">
+      <span class="ramp-dist">10m</span>
+      <div class="ramp-bar"><div class="ramp-fill" style="width:70%"><span class="ramp-lbl">build volume · 6–7 strides · low risk</span></div></div>
+      <span class="ramp-pct">~70%</span>
+    </div>
+    <div class="ramp-row">
+      <span class="ramp-dist">15m</span>
+      <div class="ramp-bar"><div class="ramp-fill" style="width:80%"><span class="ramp-lbl">higher velocity · still high volume</span></div></div>
+      <span class="ramp-pct">~80%</span>
+    </div>
+    <div class="ramp-row">
+      <span class="ramp-dist">20m</span>
+      <div class="ramp-bar"><div class="ramp-fill" style="width:90%"><span class="ramp-lbl">near top speed · more rest needed</span></div></div>
+      <span class="ramp-pct">~90%</span>
+    </div>
+    <div class="ramp-row">
+      <span class="ramp-dist">30–40m</span>
+      <div class="ramp-bar"><div class="ramp-fill" style="width:97%"><span class="ramp-lbl">final stage · lowest volume</span></div></div>
+      <span class="ramp-pct">~97%</span>
+    </div>
+  </div>
+  <div class="tablewrap">
+    <table>
+      <thead><tr><th>Stage</th><th>Distance</th><th>Volume</th><th>Velocity</th></tr></thead>
+      <tbody>
+        <tr><td>1 — Re-introduce</td><td class="val">10m</td><td>Up to <span class="num">500–700m</span> session</td><td class="val">~70%</td></tr>
+        <tr><td>2 — Build</td><td class="val">15–20m</td><td>Moderate, still buildable</td><td class="val">~80–90%</td></tr>
+        <tr><td>3 — Express</td><td class="val">30–40m</td><td><span class="num">200–300m</span> session (~40% max)</td><td class="val">~90–97%</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <ul class="bl">
+    <li><strong>Move up in 5m steps</strong> for ~<span class="num">10%</span> velocity jumps</li>
+    <li><strong>Move up in 2.5m steps</strong> for ~<span class="num">5%</span> jumps — gentler ramp for fragile populations</li>
+    <li>Biomechanics reason: longer sprints = progressively more upright posture = increasing hamstring lengthening under load. Short-to-long introduces that on a dial, not a switch.</li>
+  </ul>
+  <h3>Option A: Volume Loading (same distance)</h3>
+  <ul class="bl">
+    <li>Stay at <span class="num">10m</span> and simply add sets: <span class="num">3 → 4 → 5 → 6</span></li>
+    <li>Best for: linemen, goalkeepers, athletes who never need to run >10m in sport</li>
+    <li>Add sets, get faster with same distance — still builds tissue tolerance</li>
+  </ul>
+  <h3>Option B: Short-to-Long Distance Progression</h3>
+  <ul class="bl">
+    <li><span class="num">10×10</span> → <span class="num">15×7</span> → <span class="num">20×5</span> → <span class="num">25×4</span> → <span class="num">30×4</span></li>
+    <li>Best for: wide receivers, basketball players, strikers, track athletes</li>
+    <li>Combines volume and velocity increase across the block</li>
+  </ul>
+</section>
+
+<!-- 09 -->
+<section id="s9">
+  <div class="secn">09</div>
+  <h2>Variations Worth Knowing</h2>
+  <ul class="bl">
+    <li><strong>Curved runs:</strong> accelerate on a shallow arc, progress to deeper arcs. Minimum curve radius: ~<span class="num">9–10 yards</span> (FIFA centre circle size). Loads lateral stability through foot, ankle, knee, hip, core. Test both directions — common to find asymmetry. Limit sets — cumulative stress is real.</li>
+    <li><strong>Shortened deceleration zones:</strong> progress decel zone <span class="num">10m → 7m → 5m</span>. Advanced athletes can hit <span class="num">3m</span> max (limit to <span class="num">2</span> sets). Builds eccentric braking strength. Directly relevant to cutting and landing tolerance.</li>
+    <li><strong>Shuttle variation:</strong> 3 × 10yd back-to-back (there-back-there) then a longer break of <span class="num">15–20s</span>. Each "super-rep" = ~<span class="num">30yd</span>. Total set still ~<span class="num">100–120yd</span>.</li>
+    <li><strong>Sport-specific loading:</strong> dribble a basketball through reps. Carry a racket, lacrosse stick, or football. Start on grass → progress to track (faster surface). Start in runners → progress to cleats or court shoes. Same protocol, increased transfer.</li>
+    <li><strong>5m start option:</strong> if <span class="num">10m</span> feels too aggressive, start at <span class="num">5m</span>. Keep reps at <span class="num">10–12</span> (not 20 — too many reps per set).</li>
+  </ul>
+  <div class="card warn">
+    <div class="ct">The discipline warning</div>
+    <ul class="bl">
+      <li>Teams consistently add sleds, vests, extra cones, "creative" twists</li>
+      <li>Hansen: "I give them something simple and they send me back a video where they've changed it"</li>
+      <li>Every addition dilutes the core stimulus. Get the clean reps in first.</li>
+      <li>Variations are for later stages, not for making early sessions "more interesting"</li>
+    </ul>
+  </div>
+</section>
+
+<!-- 10 -->
+<section id="s10">
+  <div class="secn">10</div>
+  <h2>Injury-Specific Application</h2>
+  <p>Hansen built this for hamstrings. Your population is knees, ankles, and hips. The structure transfers perfectly, but two things must change per injury: <strong>posture</strong> and <strong>entry gate</strong>.</p>
+  <h3>Posture by Injury</h3>
+  <div class="tablewrap">
+    <table>
+      <thead><tr><th>Injury</th><th>Posture</th><th>Start type to begin</th><th>Reason</th></tr></thead>
+      <tbody>
+        <tr><td>Hamstring</td><td>Forward-lean, stay low</td><td>Low Falling → Three-Point</td><td>Keeps knee flexed, limits hamstring stretch</td></tr>
+        <tr><td>Knee / ACL</td><td>Acceleration posture, short distance first</td><td>High Falling → Low Falling</td><td>Manages knee load, limits early velocity</td></tr>
+        <tr><td>Calf / Achilles / foot / ankle</td><td>More upright, jog-in or high-knee lead-in</td><td>High Falling (tall/upright)</td><td>Shifts demand off distal tissue, eases into load</td></tr>
+        <tr><td>Hip flexor / adductor</td><td>More upright, gentle build-in, front-side running</td><td>High Falling (tall/upright)</td><td>Reduces hip flexion load, keeps leg more in front of body</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="card hi">
+    <div class="ct">Rule of thumb</div>
+    <ul class="bl">
+      <li><strong>Knee and hamstring → acceleration posture</strong> (forward lean, hard start)</li>
+      <li><strong>Calf, Achilles, ankle, hip flexor → upright posture</strong> with a rolling start or high-knee jog-in</li>
+      <li>Once healthy, all injuries can progress to harder acceleration postures and start types</li>
+      <li>Trial, error, and athlete feedback dials in the exact posture. Use video to check it.</li>
+    </ul>
+  </div>
+
+  <h3>Entry Gates — Do Not Start Running Until These Clear</h3>
+  <div class="phase gate">
+    <div class="phase-head"><span class="phase-n">Gate</span><span class="phase-t">ACL / Post-Surgical Knee</span></div>
+    <div class="phase-body">
+      <ul class="bl">
+        <li><strong>Quad strength is the gatekeeper, not the calendar.</strong> Non-negotiable.</li>
+        <li>Gate to begin running: quad limb symmetry index (LSI) <span class="num">≥70%</span> on surgical side</li>
+        <li>Target before loading running hard: <span class="num">≥80%</span> quad symmetry (below this, knee loading patterns deviate from healthy controls)</li>
+        <li>Strength benchmark for successful run initiation: ~<span class="num">1.45 Nm/kg</span> bodyweight</li>
+        <li>Earliest realistic running window: ~<span class="num">12 weeks</span> / <span class="num">3–4 months</span> post-op — earliest possible, never the trigger</li>
+        <li>Also need: full/near-full ROM, no swelling, normalised gait, clean single-leg control</li>
+        <li>For cutting/COD later: push to <span class="num">≥85%</span> → <span class="num">≥90–95%</span> + hop battery + psychological readiness</li>
+        <li><strong>9 months minimum to return to sport.</strong> Every month of delay up to 9 months lowers re-injury risk. Single biggest lever on outcomes.</li>
+        <li>Re-injury rate if criteria passed: <span class="num">5.6%</span>. If criteria failed: <span class="num">38.2%</span>.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="phase gate">
+    <div class="phase-head"><span class="phase-n">Gate</span><span class="phase-t">Ankle — lateral sprain most common</span></div>
+    <div class="phase-body">
+      <ul class="bl">
+        <li>No swelling, minimal/no pain, full ROM restored</li>
+        <li>Tolerance checks before running: single-leg balance, single-leg calf raise near symmetry, <span class="num">~20s</span> toe stand, <span class="num">~10</span> single-leg hops pain-free</li>
+        <li>Progression: straight jog → linear sprint (High Falling) → arc/curved runs (shallow → deep) → planned COD → reactive agility</li>
+        <li><strong>Arc running is the bridge between straight-line and cutting. Do not skip it.</strong></li>
+        <li>Expose the ankle to its first compromised, loaded, reactive position in your controlled setting, not in a live game</li>
+        <li>Grade 1: return to activity in <span class="num">1–3 weeks</span>. Grade 2: <span class="num">3–6 weeks</span>. Grade 3: <span class="num">4–6+ weeks</span>.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="phase gate">
+    <div class="phase-head"><span class="phase-n">Gate</span><span class="phase-t">Hip Flexor / Adductor</span></div>
+    <div class="phase-body">
+      <ul class="bl">
+        <li>Upright posture, gentle jog-in lead, leg stays more front-side</li>
+        <li>Progress distance conservatively — same short-to-long logic</li>
+        <li>Watch for groin/front-of-hip irritation after session — your dose monitor</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 11 -->
+<section id="s11">
+  <div class="secn">11</div>
+  <h2>The NCP Return-to-Run System</h2>
+  <p>Your repeatable framework. Same skeleton for every lower limb injury. Swap posture, start type, and entry gate per injury.</p>
+  <div class="phase gate">
+    <div class="phase-head"><span class="phase-n">Gate</span><span class="phase-t">Clear Before Any Running</span></div>
+    <div class="phase-body">
+      <ul class="bl">
+        <li>Injury-specific strength symmetry threshold met (Section 10)</li>
+        <li>No swelling at rest or after low-impact activity</li>
+        <li>Acceptable pain level (≤2/10 during activity)</li>
+        <li>ROM restored to functional range</li>
+        <li>Athlete psychologically ready</li>
+      </ul>
+    </div>
+  </div>
+  <div class="phase">
+    <div class="phase-head"><span class="phase-n">Phase 1</span><span class="phase-t">Re-introduce — Volume, Low Velocity</span></div>
+    <div class="phase-body">
+      <ul class="bl">
+        <li><strong>Distance:</strong> <span class="num">10m</span> reps</li>
+        <li><strong>Posture:</strong> injury-appropriate (upright for ankle/calf/hip; low for hamstring/knee)</li>
+        <li><strong>Start type:</strong> High Falling Start</li>
+        <li><strong>Intensity:</strong> sub-max, <span class="num">60–70%</span>, time-governed (cap at <span class="num">50%</span> slower than known sprint PB)</li>
+        <li><strong>Sets/reps:</strong> <span class="num">3–4 × 10</span>, ~<span class="num">6–8s</span> per rep, ~<span class="num">90–120s</span> per set</li>
+        <li><strong>Rest:</strong> <span class="num">3 min</span> between sets</li>
+        <li><strong>Surface:</strong> flat, straight, consistent (grass or track)</li>
+        <li><strong>Exit when:</strong> pain-free, no swelling response next morning, mechanics clean on video, stable set times</li>
+      </ul>
+    </div>
+  </div>
+  <div class="phase">
+    <div class="phase-head"><span class="phase-n">Phase 2</span><span class="phase-t">Build — Velocity + Decel Demand</span></div>
+    <div class="phase-body">
+      <ul class="bl">
+        <li><strong>Distance:</strong> progress <span class="num">10m → 15m → 20m</span> in <span class="num">2.5–5m</span> steps</li>
+        <li><strong>Start type:</strong> progress to Low Falling Start</li>
+        <li><strong>Intensity:</strong> <span class="num">75–85%</span></li>
+        <li><strong>Sets/reps:</strong> <span class="num">4 × 10</span></li>
+        <li>Begin shortening decel zone: <span class="num">10m → 7m → 5m</span></li>
+        <li>Add shallow arc runs — this is your COD primer</li>
+        <li><strong>Exit when:</strong> tolerates higher velocity, decel clean on video, symmetry target rising, no post-session symptom flare</li>
+      </ul>
+    </div>
+  </div>
+  <div class="phase">
+    <div class="phase-head"><span class="phase-n">Phase 3</span><span class="phase-t">Express — Multidirectional + Sport-Specific</span></div>
+    <div class="phase-body">
+      <ul class="bl">
+        <li><strong>Distance:</strong> <span class="num">20–30m</span>, near top velocity</li>
+        <li><strong>Start type:</strong> progress to Three-Point or Push-Up Start</li>
+        <li><strong>Rest:</strong> full rest between reps — quality over density now</li>
+        <li>Add deeper arcs, <span class="num">180°</span> cuts, lateral shuffles, reactive starts</li>
+        <li>Add sport loading: basketball dribble through reps, carry equipment</li>
+        <li><strong>Exit when:</strong> meets full RTS criteria for that injury</li>
+      </ul>
+    </div>
+  </div>
+  <div class="phase">
+    <div class="phase-head"><span class="phase-n">Monitor</span><span class="phase-t">Every Session</span></div>
+    <div class="phase-body">
+      <ul class="bl">
+        <li>Stopwatch set times every session — log them</li>
+        <li>Symptom and swelling check the following morning</li>
+        <li>Video push-off and landing mechanics each phase</li>
+        <li>Cap sets at <span class="num">5</span> reps if mechanics fail under fatigue</li>
+        <li>Target less than <span class="num">10%</span> time drop-off across a set</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 12 -->
+<section id="s12">
+  <div class="secn">12</div>
+  <h2>Coaching Cues &amp; Mistakes</h2>
+  <h3>Cues from Hansen directly</h3>
+  <div class="cue">"Arms, rhythm, relaxation." — what he cues during reps. Not "gut it out."</div>
+  <div class="cue">"Push the ground away, stay patient standing up." — controls premature upright posture in acceleration.</div>
+  <div class="cue">"Smooth in, controlled out." — deceleration discipline.</div>
+  <div class="cue">"Non-negotiables in training mean sticking to the basics that create long-term adaptations." — Derek Hansen</div>
+  <div class="cue">"The simplicity of the 10×10 is its power — whether you're rehabbing or working on performance, the principles remain the same." — Derek Hansen</div>
+  <div class="cue">"In return-to-play scenarios, the 10×10 ensures that athletes aren't just working hard, but working on the right things." — Derek Hansen</div>
+
+  <h3>Common Mistakes</h3>
+  <ol class="bl">
+    <li><strong>Starting running before the strength gate is met</strong> — especially ACL quad symmetry. Number one error in your population.</li>
+    <li><strong>Chasing top speed too early</strong> — short-to-long exists for a reason. Distance jumps of 5m max.</li>
+    <li><strong>Adding gadgets and variations too early</strong> — sleds, vests, creative twists. Get clean reps in first.</li>
+    <li><strong>Ignoring fatigue-driven mechanic breakdown</strong> — if reps 7–10 look terrible, reduce to 5 reps per set.</li>
+    <li><strong>Skipping arc runs on ankle and knee</strong> — going straight from linear to cutting is how re-injuries happen.</li>
+    <li><strong>Using the calendar as the trigger</strong> — "it's been 12 weeks" is not clearance. Criteria-based progression only.</li>
+    <li><strong>Over-complicating the structure</strong> — 10×10 on a marked surface is enough. Resist the urge to innovate when the basics aren't nailed yet.</li>
+    <li><strong>Not using video</strong> — you cannot catch compensation patterns in real time at speed. Film and review.</li>
+  </ol>
+</section>
+
+<!-- 13 -->
+<section id="s13">
+  <div class="secn">13</div>
+  <h2>Key Takeaways</h2>
+  <ol class="bl">
+    <li><strong>The 10×10 is a dial, not a drill.</strong> Same structure runs rehab, conditioning, or speed by changing work-to-rest ratio.</li>
+    <li><strong>Short accelerations are protective.</strong> Low eccentric tissue load + high volume is the mechanism. ~<span class="num">70–75%</span> max velocity is meaningful for sport without the injury risk of higher velocities.</li>
+    <li><strong>Short-to-long is the engine.</strong> Lengthen distance to raise velocity in controlled steps: <span class="num">10 → 15 → 20 → 30–40m</span>.</li>
+    <li><strong>Start type = your load dial within the 10m.</strong> High Falling → Low Falling → Three-Point → Push-Up. Progress this across the rehab block.</li>
+    <li><strong>The high-low framework governs weekly structure.</strong> Conditioning-dial 10×10 sits in the low zone — recoverable on consecutive days. Speed-dial sits in high — needs 48–72h recovery.</li>
+    <li><strong>Posture changes per injury.</strong> Knee/hamstring = acceleration posture. Calf/Achilles/ankle/hip = upright rolling start.</li>
+    <li><strong>The gate is everything for your population.</strong> ACL: quad symmetry gate (≥70% to run, 90%+ to cut, 9-month minimum to RTS). Ankle: swelling/ROM/hop clearance + arc running before cutting.</li>
+    <li><strong>Monitor reproducibility.</strong> Stable set times = ready to progress. Rapid drop-off = not yet. Target &lt;<span class="num">10%</span> time decay across a set.</li>
+    <li><strong>Use the time-governor in rehab.</strong> Start at 50% slower than their best 10m time and shave off 5–10% per session.</li>
+    <li><strong>Protect the simplicity.</strong> The boredom is the medicine. <span class="num">3</span> sets of 10×10 done consistently beats 10 complicated modifications done once.</li>
+  </ol>
+</section>
+
+<!-- 14 — ALL DATA -->
+<section id="s14">
+  <div class="secn">14</div>
+  <h2>All Data &amp; Numbers</h2>
+  <div class="tablewrap">
+    <table>
+      <thead><tr><th>Metric / Finding</th><th class="val">Value</th><th>Context</th></tr></thead>
+      <tbody>
+        <tr><td>Sprint distance per rep</td><td class="val">10m / 10yd</td><td>Core protocol distance; ~6–7 strides</td></tr>
+        <tr><td>Sprint time per rep</td><td class="val">~1.5–2s</td><td>Approx 1.6s with timing gates</td></tr>
+        <tr><td>Reps per set (standard)</td><td class="val">10</td><td>Can drop to 5–6 in early onboarding</td></tr>
+        <tr><td>Starting sets per session</td><td class="val">3</td><td>Hansen's standard starting point; build to 4–6</td></tr>
+        <tr><td>Max sets ever reported</td><td class="val">10</td><td>Extremely stressful; described as "like a weight workout"</td></tr>
+        <tr><td>Volume per set (target)</td><td class="val">~100m / 100yd</td><td>Governs all rep/distance combinations</td></tr>
+        <tr><td>3-set session volume</td><td class="val">300m / 30 reps</td><td>Completed in ~9 min including rest</td></tr>
+        <tr><td>Rep interval (conditioning)</td><td class="val">~6s</td><td>~2s sprint + 4s decel/reset</td></tr>
+        <tr><td>Set completion time (conditioning)</td><td class="val">~60s</td><td>HR peaks at 180–190bpm</td></tr>
+        <tr><td>Set completion time (rehab)</td><td class="val">90–120s</td><td>10–12s per rep</td></tr>
+        <tr><td>Set completion time (speed)</td><td class="val">150–200s</td><td>18–30s per rep, maximal quality</td></tr>
+        <tr><td>High Falling Start — rep interval</td><td class="val">8–9s</td><td>Set: 80–90s</td></tr>
+        <tr><td>Low Falling Start — rep interval</td><td class="val">12–40s</td><td>Set: 120–140s</td></tr>
+        <tr><td>Three-Point Start — rep interval</td><td class="val">~18s</td><td>Set: ~180s</td></tr>
+        <tr><td>Push-Up Start — rep interval</td><td class="val">~20s</td><td>Set: ~200s</td></tr>
+        <tr><td>Rest between sets</td><td class="val">2–5 min</td><td>Typically 3 min; 2 min well-conditioned athletes</td></tr>
+        <tr><td>Velocity at 10m</td><td class="val">~70–75%</td><td>Of max velocity</td></tr>
+        <tr><td>Velocity at 15m</td><td class="val">~80%</td><td>Of max velocity</td></tr>
+        <tr><td>Velocity at 20m</td><td class="val">~90%</td><td>Of max velocity</td></tr>
+        <tr><td>Velocity at 30–40m</td><td class="val">~90–97%</td><td>Of max velocity</td></tr>
+        <tr><td>Distance increment (standard)</td><td class="val">5m steps</td><td>~10% velocity increase per step</td></tr>
+        <tr><td>Distance increment (conservative)</td><td class="val">2.5m steps</td><td>~5% velocity increase per step</td></tr>
+        <tr><td>Stage 1 session volume</td><td class="val">500–700m</td><td>High volume, 10m reps</td></tr>
+        <tr><td>Stage 3 session volume</td><td class="val">200–300m</td><td>~40% of max; 30–40m reps</td></tr>
+        <tr><td>Rehab block length (Grade 1–2 hamstring)</td><td class="val">10 sessions / ~2 weeks</td><td>Consecutive days preferred</td></tr>
+        <tr><td>Total reps across a hamstring RTP block</td><td class="val">~400 reps</td><td>~4km sprint volume</td></tr>
+        <tr><td>Timing gate drop-off target</td><td class="val">&lt;10%</td><td>Across all 10 reps; &gt;10% = not yet ready</td></tr>
+        <tr><td>Acceptable drop-off (well-conditioned)</td><td class="val">Good for 7–8 reps</td><td>Then minor drop-off only</td></tr>
+        <tr><td>Performance drop-off (underprepared)</td><td class="val">20–25%</td><td>After just 1–3 good reps</td></tr>
+        <tr><td>Rehab start speed (time governor)</td><td class="val">50% slower than PB</td><td>e.g. PB 1.6s → rehab cap at 2.3–2.4s</td></tr>
+        <tr><td>Speed shave per session</td><td class="val">5–10%</td><td>Increment toward full velocity progressively</td></tr>
+        <tr><td>Curved run minimum radius</td><td class="val">9–10 yards</td><td>FIFA centre circle size — minimum safe arc</td></tr>
+        <tr><td>Decel zone progression</td><td class="val">10m → 7m → 5m → 3m</td><td>3m advanced only, max 2 sets</td></tr>
+        <tr><td>Minimum linear space (indoor)</td><td class="val">25m / 25yd</td><td>10m accel + 10m decel + 5m buffer</td></tr>
+        <tr><td>Optimal linear space</td><td class="val">30m</td><td>10m accel + 15m decel + 5m buffer</td></tr>
+        <tr><td>ACL gate to begin running (LSI)</td><td class="val">≥70%</td><td>Quad symmetry index</td></tr>
+        <tr><td>ACL gate to load running hard (LSI)</td><td class="val">≥80%</td><td>Below this, knee loading deviates from healthy</td></tr>
+        <tr><td>ACL strength benchmark (jogging)</td><td class="val">~1.45 Nm/kg</td><td>Quad strength to bodyweight ratio</td></tr>
+        <tr><td>ACL earliest return to running</td><td class="val">~12 weeks / 3–4 months</td><td>Criteria-based, not time-based</td></tr>
+        <tr><td>ACL minimum RTS timeline</td><td class="val">9 months</td><td>Every month delay reduces re-injury risk</td></tr>
+        <tr><td>ACL re-injury rate (criteria passed)</td><td class="val">5.6%</td><td>vs 38.2% if criteria failed</td></tr>
+        <tr><td>ACL re-injury rate with early RTS (&lt;9mo)</td><td class="val">~39%</td><td>vs 19% when waiting &gt;9 months</td></tr>
+        <tr><td>ACL RTS symmetry target</td><td class="val">≥90–95%</td><td>Quad LSI for return to sport</td></tr>
+        <tr><td>Ankle Grade 1 recovery</td><td class="val">1–3 weeks</td><td>Return to activity</td></tr>
+        <tr><td>Ankle Grade 2 recovery</td><td class="val">3–6 weeks</td><td>Return to activity</td></tr>
+        <tr><td>Ankle Grade 3 recovery</td><td class="val">4–6+ weeks</td><td>Return to activity</td></tr>
+        <tr><td>Elite sprinter high-low ratio</td><td class="val">35% high / 65% low</td><td>Charlie Francis data on top sprinters</td></tr>
+        <tr><td>High-intensity zone (Francis)</td><td class="val">95–100%</td><td>Original definition; Hansen expanded to 90–100%</td></tr>
+        <tr><td>Medium zone (avoid)</td><td class="val">75–90%</td><td>High fatigue, high injury risk, no direct speed gain</td></tr>
+        <tr><td>Low zone (Hansen adjusted)</td><td class="val">&lt;70–75%</td><td>Circulatory recovery; Francis used &lt;75%</td></tr>
+        <tr><td>Recovery between high-intensity sessions</td><td class="val">48–72h</td><td>Minimum for CNS recovery</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- 15 — NOTION PUSH -->
+<section id="s15">
+  <div class="secn">15</div>
+  <h2>Notion Push</h2>
+  <div class="nblock">
+    <div class="nrow"><span class="nkey">Page Title</span><span class="nval">The 10×10 Protocol — Master Reference</span></div>
+    <div class="nrow"><span class="nkey">Source Type</span><span class="nval">YouTube + Podcast + Blog</span></div>
+    <div class="nrow"><span class="nkey">Status</span><span class="nval">In the Lab 🧪</span></div>
+    <div class="nrow"><span class="nkey">Topic Tags</span><span class="nval">
+      <div class="taglist">
+        <span class="ntag">S&amp;C</span><span class="ntag">Physio</span><span class="ntag">Sprint Training</span>
+        <span class="ntag">Return to Sport</span><span class="ntag">ACL Rehab</span><span class="ntag">Athletic Development</span>
+        <span class="ntag">Training Systems</span><span class="ntag">Load Management</span>
+      </div>
+    </span></div>
+    <div class="nrow"><span class="nkey">One-line Summary</span><span class="nval">Derek Hansen's complete 10×10 repeat sprint protocol — from origin and mechanisms to start type progressions, high-low programming, and injury-specific RTP application.</span></div>
+    <div class="nrow"><span class="nkey">Key Takeaways</span><span class="nval">
+      <ul class="bl" style="margin:4px 0">
+        <li>One structure, three outcomes: change work-to-rest ratio to switch between rehab, conditioning, and speed</li>
+        <li>Start type is the load dial within 10m: High Falling → Low Falling → Three-Point → Push-Up</li>
+        <li>Short-to-long is the RTP engine: 10 → 15 → 20 → 30–40m as tissue tolerates more</li>
+        <li>ACL gate: ≥70% quad LSI to begin, 9-month minimum to RTS, 5.6% re-injury if criteria passed</li>
+        <li>Ankle: arc running is the mandatory bridge between linear sprint and cutting — do not skip it</li>
+      </ul>
+    </span></div>
+    <div class="nrow"><span class="nkey">Clinical Relevance</span><span class="nval">Directly applicable to basketball athlete RTP after ACL, ankle sprains, and knee surgery. Provides a structured sprint-loading progression that respects tissue timelines and builds sport-specific fitness simultaneously.</span></div>
+    <div class="nrow"><span class="nkey">Link</span><span class="nval">https://www.sprintcoach.com/blog/the-10x10-repeat-sprint-protocol-the-method-behind-the-monotony</span></div>
+  </div>
+</section>
+
+<!-- PERSONAL NOTES -->
+<div class="pnotes">
+  <span class="pnlab">📝 Your Notes</span>
+  <textarea id="pn-main" placeholder="Add your own clinical notes, athlete cases, modifications..." oninput="saveNote('main')"></textarea>
+  <div class="psaved" id="sv-main">Saved ✓</div>
+</div>
+
+</main>
+</div>
+
+<script>
+// Mobile menu
+const ham=document.getElementById('ham'),nav=document.getElementById('nav');
+ham.addEventListener('click',()=>nav.classList.toggle('open'));
+nav.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>nav.classList.remove('open')));
+
+// Active section highlight
+const links=[...nav.querySelectorAll('a')];
+const secs=links.map(a=>document.querySelector(a.getAttribute('href'))).filter(Boolean);
+const obs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      const i=secs.indexOf(e.target);
+      links.forEach(l=>l.classList.remove('active'));
+      if(links[i])links[i].classList.add('active');
+    }
+  });
+},{rootMargin:'-15% 0px -70% 0px'});
+secs.forEach(s=>obs.observe(s));
+
+// Notes persistence
+function saveNote(k){
+  const ta=document.getElementById('pn-'+k);
+  const sv=document.getElementById('sv-'+k);
+  if(!ta)return;
+  try{localStorage.setItem('ncp-10x10-'+k,ta.value);sv.style.opacity='1';setTimeout(()=>sv.style.opacity='0',1500);}catch(e){}
+}
+function loadNotes(){
+  ['main'].forEach(k=>{
+    const ta=document.getElementById('pn-'+k);
+    if(!ta)return;
+    try{const v=localStorage.getItem('ncp-10x10-'+k);if(v)ta.value=v;}catch(e){}
+  });
+}
+loadNotes();
+</script>
+</body>
+</html>
